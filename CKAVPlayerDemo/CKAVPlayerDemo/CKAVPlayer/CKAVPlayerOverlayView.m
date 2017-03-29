@@ -49,12 +49,7 @@
 
 - (void)drawRect:(CGRect)rect {
     [super drawRect:rect];
-    CGFloat viewW = CGRectGetWidth(rect);
-    CGFloat viewH = CGRectGetHeight(rect);
-//    self.topView.frame = CGRectMake(0, 0, viewW, kBarHeight);
-    self.bottomView.frame = CGRectMake(0, viewH - kBarHeight, viewW, kBarHeight);
-    self.playPauseButton.frame = CGRectMake(kCKMargin, 0, 44, 30);
-    self.playPauseButton.center = CGPointMake(self.playPauseButton.center.x, kBarHeight/2.0);
+
 }
 
 - (void)creatUI {
@@ -101,6 +96,36 @@
         CKGradualTransparentView *view = [[CKGradualTransparentView alloc] initWithFrame:CGRectZero];
         view.type = CKGradualTransoarentViewTypeDownToUp;
         [self addSubview:view];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                         attribute:NSLayoutAttributeLeft
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:self
+                                                         attribute:NSLayoutAttributeLeft
+                                                        multiplier:1.0
+                                                          constant:0]];
+        
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                         attribute:NSLayoutAttributeBottom
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:self
+                                                         attribute:NSLayoutAttributeBottom
+                                                        multiplier:1.0
+                                                          constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                         attribute:NSLayoutAttributeRight
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:self
+                                                         attribute:NSLayoutAttributeRight
+                                                        multiplier:1.0
+                                                          constant:0]];
+        [view addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                         attribute:NSLayoutAttributeHeight
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:nil
+                                                         attribute:NSLayoutAttributeNotAnAttribute
+                                                        multiplier:1.0
+                                                          constant:kBarHeight]];
+
         view;
     });
     
@@ -113,8 +138,39 @@
         button.layer.borderWidth = 0.5;
         button.layer.cornerRadius = 5;
         button.clipsToBounds = YES;
+        [button setTranslatesAutoresizingMaskIntoConstraints:NO];
         [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [self.bottomView addSubview:button];
+        [self.bottomView addConstraint:[NSLayoutConstraint constraintWithItem:button
+                                                         attribute:NSLayoutAttributeLeft
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:self.bottomView
+                                                         attribute:NSLayoutAttributeLeft
+                                                        multiplier:1.0
+                                                          constant:kCKMargin]];
+        
+        [self.bottomView addConstraint:[NSLayoutConstraint constraintWithItem:button
+                                                         attribute:NSLayoutAttributeCenterY
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:self.bottomView
+                                                         attribute:NSLayoutAttributeCenterY
+                                                        multiplier:1.0
+                                                          constant:0]];
+        [button addConstraint:[NSLayoutConstraint constraintWithItem:button
+                                                         attribute:NSLayoutAttributeWidth
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:nil
+                                                         attribute:NSLayoutAttributeNotAnAttribute
+                                                        multiplier:1.0
+                                                          constant:44]];
+        [button addConstraint:[NSLayoutConstraint constraintWithItem:button
+                                                         attribute:NSLayoutAttributeHeight
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:nil
+                                                         attribute:NSLayoutAttributeNotAnAttribute
+                                                        multiplier:1.0
+                                                          constant:30]];
+
         button;
     });
     
@@ -122,6 +178,28 @@
         CKDurationSlider *slider = [[CKDurationSlider alloc] init];
         slider.value = 0;
         [self.bottomView addSubview:slider];
+        [self.bottomView addConstraint:[NSLayoutConstraint constraintWithItem:slider
+                                                                    attribute:NSLayoutAttributeLeft
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self.playPauseButton
+                                                                    attribute:NSLayoutAttributeRight
+                                                                   multiplier:1.0
+                                                                     constant:kCKMargin]];
+        
+        [self.bottomView addConstraint:[NSLayoutConstraint constraintWithItem:slider
+                                                                    attribute:NSLayoutAttributeCenterY
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self.bottomView
+                                                                    attribute:NSLayoutAttributeCenterY
+                                                                   multiplier:1.0
+                                                                     constant:0]];
+        [self.bottomView addConstraint:[NSLayoutConstraint constraintWithItem:slider
+                                                                    attribute:NSLayoutAttributeRight
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self.bottomView
+                                                                    attribute:NSLayoutAttributeRight
+                                                                   multiplier:1.0
+                                                                     constant:-kCKMargin]];
         slider;
     });
 }
