@@ -15,6 +15,10 @@
 		70C81C4E1E84EB4D005879CB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 70C81C4C1E84EB4D005879CB /* LaunchScreen.storyboard */; };
 		70C81C581E84EBC4005879CB /* CKAVPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C81C571E84EBC4005879CB /* CKAVPlayer.m */; };
 		70C81C5B1E84EC67005879CB /* CKPlayerDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C81C5A1E84EC67005879CB /* CKPlayerDemoViewController.m */; };
+		70C81C5E1E84FA87005879CB /* CKAVPlayerOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C81C5D1E84FA87005879CB /* CKAVPlayerOverlayView.m */; };
+		70C81C651E8A29F8005879CB /* CKGradualTransparentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C81C641E8A29F8005879CB /* CKGradualTransparentView.m */; };
+		70C81C681E8A3653005879CB /* CKAVPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C81C671E8A3653005879CB /* CKAVPlayerController.m */; };
+		70C81C6B1E8B849B005879CB /* CKDurationSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 70C81C6A1E8B849B005879CB /* CKDurationSlider.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +36,14 @@
 		70C81C571E84EBC4005879CB /* CKAVPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKAVPlayer.m; sourceTree = "<group>"; };
 		70C81C591E84EC67005879CB /* CKPlayerDemoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKPlayerDemoViewController.h; sourceTree = "<group>"; };
 		70C81C5A1E84EC67005879CB /* CKPlayerDemoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKPlayerDemoViewController.m; sourceTree = "<group>"; };
+		70C81C5C1E84FA87005879CB /* CKAVPlayerOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKAVPlayerOverlayView.h; sourceTree = "<group>"; };
+		70C81C5D1E84FA87005879CB /* CKAVPlayerOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKAVPlayerOverlayView.m; sourceTree = "<group>"; };
+		70C81C631E8A29F8005879CB /* CKGradualTransparentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKGradualTransparentView.h; sourceTree = "<group>"; };
+		70C81C641E8A29F8005879CB /* CKGradualTransparentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKGradualTransparentView.m; sourceTree = "<group>"; };
+		70C81C661E8A3653005879CB /* CKAVPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKAVPlayerController.h; sourceTree = "<group>"; };
+		70C81C671E8A3653005879CB /* CKAVPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKAVPlayerController.m; sourceTree = "<group>"; };
+		70C81C691E8B849B005879CB /* CKDurationSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKDurationSlider.h; sourceTree = "<group>"; };
+		70C81C6A1E8B849B005879CB /* CKDurationSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKDurationSlider.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,10 +103,26 @@
 		70C81C551E84EBB0005879CB /* CKAVPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				70C81C621E8A2998005879CB /* Views */,
 				70C81C561E84EBC4005879CB /* CKAVPlayer.h */,
 				70C81C571E84EBC4005879CB /* CKAVPlayer.m */,
+				70C81C5C1E84FA87005879CB /* CKAVPlayerOverlayView.h */,
+				70C81C5D1E84FA87005879CB /* CKAVPlayerOverlayView.m */,
+				70C81C661E8A3653005879CB /* CKAVPlayerController.h */,
+				70C81C671E8A3653005879CB /* CKAVPlayerController.m */,
 			);
 			path = CKAVPlayer;
+			sourceTree = "<group>";
+		};
+		70C81C621E8A2998005879CB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				70C81C631E8A29F8005879CB /* CKGradualTransparentView.h */,
+				70C81C641E8A29F8005879CB /* CKGradualTransparentView.m */,
+				70C81C691E8B849B005879CB /* CKDurationSlider.h */,
+				70C81C6A1E8B849B005879CB /* CKDurationSlider.m */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -171,10 +199,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				70C81C461E84EB4D005879CB /* ViewController.m in Sources */,
+				70C81C651E8A29F8005879CB /* CKGradualTransparentView.m in Sources */,
+				70C81C5E1E84FA87005879CB /* CKAVPlayerOverlayView.m in Sources */,
 				70C81C5B1E84EC67005879CB /* CKPlayerDemoViewController.m in Sources */,
 				70C81C581E84EBC4005879CB /* CKAVPlayer.m in Sources */,
 				70C81C431E84EB4D005879CB /* AppDelegate.m in Sources */,
 				70C81C401E84EB4D005879CB /* main.m in Sources */,
+				70C81C6B1E8B849B005879CB /* CKDurationSlider.m in Sources */,
+				70C81C681E8A3653005879CB /* CKAVPlayerController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,6 +363,7 @@
 				70C81C541E84EB4D005879CB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

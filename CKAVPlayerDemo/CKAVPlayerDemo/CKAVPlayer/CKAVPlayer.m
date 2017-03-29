@@ -7,6 +7,7 @@
 //
 
 #import "CKAVPlayer.h"
+//frameWork
 #import <AVFoundation/AVFoundation.h>
 
 @interface CKAVPlayer ()
@@ -39,16 +40,23 @@
     [self.player play];
 }
 
+- (void)ck_pause {
+    [self.player pause];
+}
+
 - (void)drawRect:(CGRect)rect {
     self.playerLayer.frame = rect;
 }
 
 
 - (void)creatPlayer {
+    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
     AVPlayerItem *item = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"http://znf.oss-cn-shanghai.aliyuncs.com/course/znf2017031401/znf2017031401001.mp4"]];
     _player = [AVPlayer playerWithPlayerItem:item];
     _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
     [self.layer addSublayer:_playerLayer];
 }
+
+
 
 @end

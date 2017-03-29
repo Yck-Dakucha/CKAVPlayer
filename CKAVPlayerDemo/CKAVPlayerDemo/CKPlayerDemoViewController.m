@@ -7,11 +7,11 @@
 //
 
 #import "CKPlayerDemoViewController.h"
-#import "CKAVPlayer.h"
+#import "CKAVPlayerController.h"
 
 @interface CKPlayerDemoViewController ()
 
-@property (nonatomic, strong) CKAVPlayer *videoPlayer;
+@property (nonatomic, strong) CKAVPlayerController *videoPlayerController;
 
 @end
 
@@ -20,14 +20,43 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.videoPlayer = [[CKAVPlayer alloc] initWithFrame:CGRectMake(0, 64, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 9/16.0)];
-//    self.videoPlayer.backgroundColor = [UIColor grayColor];
-    [self.view addSubview:self.videoPlayer];
+//    self.videoPlayerController = [[CKAVPlayerController alloc] initWithFrame:CGRectMake(0, 64, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 9/16.0)];
+    self.videoPlayerController = [[CKAVPlayerController alloc] init];
+    [self.view addSubview:self.videoPlayerController.view];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoPlayerController.view
+                                                     attribute:NSLayoutAttributeLeft
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:self.view
+                                                     attribute:NSLayoutAttributeLeft
+                                                    multiplier:1.0
+                                                      constant:0]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoPlayerController.view
+                                                     attribute:NSLayoutAttributeTop
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:self.view
+                                                     attribute:NSLayoutAttributeTop
+                                                    multiplier:1.0
+                                                      constant:64]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoPlayerController.view
+                                                     attribute:NSLayoutAttributeRight
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:self.view
+                                                     attribute:NSLayoutAttributeRight
+                                                    multiplier:1.0
+                                                      constant:0]];
+    [self.videoPlayerController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoPlayerController.view
+                                                     attribute:NSLayoutAttributeHeight
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:nil
+                                                     attribute:NSLayoutAttributeNotAnAttribute
+                                                    multiplier:1.0
+                                                      constant:[UIScreen mainScreen].bounds.size.width * 9/16.0]];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self.videoPlayer ck_play];
+//    [self.videoPlayer ck_play];
 }
 
 

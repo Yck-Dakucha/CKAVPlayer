@@ -9,7 +9,12 @@
 #import <UIKit/UIKit.h>
 
 @interface CKAVPlayer : UIView
-
+/**
+ 播放
+ */
 - (void)ck_play;
-
+/**
+ 暂停
+ */
+- (void)ck_pause;
 @end
