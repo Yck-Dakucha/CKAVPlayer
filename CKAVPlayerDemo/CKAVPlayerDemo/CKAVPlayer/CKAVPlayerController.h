@@ -10,11 +10,24 @@
 #import <UIKit/UIKit.h>
 
 @interface CKAVPlayerController : NSObject
-
+/**
+ 播放视图
+ */
 @property (nonatomic, strong, readonly) UIView *view;
 
-
-
 - (instancetype)initWithFrame:(CGRect)frame;
+/**
+ 设置视频播放地址
 
+ @param url 视频播放地址
+ */
+- (void)ck_playWithURL:(NSURL *)url;
+/**
+ 播放
+ */
+- (void)ck_play;
+/**
+ 暂停
+ */
+- (void)ck_pause;
 @end

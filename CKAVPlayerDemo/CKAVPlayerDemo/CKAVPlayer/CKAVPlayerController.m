@@ -9,8 +9,9 @@
 #import "CKAVPlayerController.h"
 #import "CKAVPlayer.h"
 #import "CKAVPlayerOverlayView.h"
+#import "CKDurationSlider.h"
 
-@interface CKAVPlayerController ()
+@interface CKAVPlayerController ()<CKAVPlayerDelegate>
 
 @property (nonatomic, strong) CKAVPlayer *player;
 @property (nonatomic, strong) CKAVPlayerOverlayView *overlayView;
@@ -35,6 +36,7 @@
     self = [super init];
     if (self) {
         _player = [[CKAVPlayer alloc] init];
+        _player.delegate = self;
         [_player addSubview:self.overlayView];
         [self configConstraints];
         [self configControlAction];
@@ -47,6 +49,7 @@
     self = [super init];
     if (self) {
         _player = [[CKAVPlayer alloc] initWithFrame:frame];
+        _player.delegate = self;
         self.overlayView.frame = frame;
         [_player addSubview:self.overlayView];
         [self configControlAction];
@@ -94,6 +97,23 @@
     [self.overlayView.playPauseButton addTarget:self action:@selector(playOrPauseButtonClick:) forControlEvents:UIControlEventTouchUpInside];
 }
 
+#pragma mark -  播放器代理
+- (void)ckAVPlayer:(CKAVPlayer *)avPlayer timeDidChange:(NSTimeInterval)time {
+    NSLog(@"player currentTime >>> %f",time);
+    if (self.overlayView.durationSlider.maximumValue == 1) {
+        self.overlayView.durationSlider.maximumValue = avPlayer.totalDuration;
+    }
+    self.overlayView.durationSlider.value = time;
+}
+
+- (void)ckAVPlayer:(CKAVPlayer *)avPlayer loadedTimeDidChange:(NSTimeInterval)time {
+    [self.overlayView.durationSlider ck_setPlayableValue:time/avPlayer.totalDuration];
+}
+
+#pragma mark -  设置播放信息
+- (void)ck_playWithURL:(NSURL *)url {
+    [self.player ck_playWithURL:url];
+}
 
 #pragma mark -  播放器控制
 - (void)playOrPauseButtonClick:(UIButton *)button {
@@ -107,4 +127,16 @@
     }
 }
 
+/**
+ 播放
+ */
+- (void)ck_play {
+    [self.player ck_play];
+}
+/**
+ 暂停
+ */
+- (void)ck_pause {
+    [self.player ck_pause];
+}
 @end
