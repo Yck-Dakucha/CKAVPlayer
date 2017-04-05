@@ -61,4 +61,10 @@
  暂停
  */
 - (void)ck_pause;
+/**
+ 跳转到时间
+
+ @param time 目标时间
+ */
+- (void)ck_seekToTime:(NSTimeInterval)time;
 @end

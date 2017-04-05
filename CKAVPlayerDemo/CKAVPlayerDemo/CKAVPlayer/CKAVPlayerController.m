@@ -15,6 +15,10 @@
 
 @property (nonatomic, strong) CKAVPlayer *player;
 @property (nonatomic, strong) CKAVPlayerOverlayView *overlayView;
+/**
+ 是否正在Seek
+ */
+@property (nonatomic, assign) BOOL isSeeking;
 
 @end
 
@@ -95,6 +99,7 @@
 #pragma mark -  设置OverlayView的Action
 - (void)configControlAction{
     [self.overlayView.playPauseButton addTarget:self action:@selector(playOrPauseButtonClick:) forControlEvents:UIControlEventTouchUpInside];
+
 }
 
 #pragma mark -  播放器代理
@@ -102,11 +107,17 @@
     NSLog(@"player currentTime >>> %f",time);
     if (self.overlayView.durationSlider.maximumValue == 1) {
         self.overlayView.durationSlider.maximumValue = avPlayer.totalDuration;
+        [self enableSlider:YES];
     }
-    self.overlayView.durationSlider.value = time;
+    if (!self.isSeeking) {
+        self.overlayView.durationSlider.value = time;
+    }
 }
 
 - (void)ckAVPlayer:(CKAVPlayer *)avPlayer loadedTimeDidChange:(NSTimeInterval)time {
+    if (self.isSeeking) {
+        return;
+    }
     [self.overlayView.durationSlider ck_setPlayableValue:time/avPlayer.totalDuration];
 }
 
@@ -127,6 +138,66 @@
     }
 }
 
+- (void)durationSliderTouchBegan:(UISlider *)slider {
+    self.isSeeking = YES;
+}
+
+- (void)durationSliderValueChanged:(UISlider *)slider {
+//    [NSObject cancelPreviousPerformRequestsWithTarget:self.overlayView
+//                                             selector:@selector(animateHideBars)
+//                                               object:nil];
+}
+
+- (void)durationSliderTouchEnded:(UISlider *)slider {
+    [self.player ck_seekToTime:floor(slider.value)];
+//    [self.overlayView performSelector:@selector(animateHideBars)
+//                              withObject:nil
+//                              afterDelay:5.0];
+    self.isSeeking = NO;
+}
+
+
+- (void)enableSlider: (BOOL)shouldEnableSlider
+{
+    //未设置slider是否可见
+    if (shouldEnableSlider) {
+        self.overlayView.durationSlider.enabled = YES;
+        [self.overlayView.durationSlider addTarget:self
+                                               action:@selector(durationSliderValueChanged:)
+                                     forControlEvents:UIControlEventValueChanged];
+        
+        [self.overlayView.durationSlider addTarget:self
+                                               action:@selector(durationSliderTouchBegan:)
+                                     forControlEvents:UIControlEventTouchDown];
+        
+        [self.overlayView.durationSlider addTarget:self
+                                               action:@selector(durationSliderTouchEnded:)
+                                     forControlEvents:UIControlEventTouchUpInside];
+        
+        [self.overlayView.durationSlider addTarget:self
+                                               action:@selector(durationSliderTouchEnded:)
+                                     forControlEvents:UIControlEventTouchUpOutside];
+    } else {
+        self.overlayView.durationSlider.enabled = NO;
+        [self.overlayView.durationSlider removeTarget:self
+                                                  action:@selector(durationSliderValueChanged:)
+                                        forControlEvents:UIControlEventValueChanged];
+        
+        [self.overlayView.durationSlider removeTarget:self
+                                                  action:@selector(durationSliderTouchBegan:)
+                                        forControlEvents:UIControlEventTouchDown];
+        
+        [self.overlayView.durationSlider removeTarget:self
+                                                  action:@selector(durationSliderTouchEnded:)
+                                        forControlEvents:UIControlEventTouchUpInside];
+        
+        [self.overlayView.durationSlider removeTarget:self
+                                                  action:@selector(durationSliderTouchEnded:)
+                                        forControlEvents:UIControlEventTouchUpOutside];
+    }
+}
+
+#pragma mark -  外部接口
 /**
  播放
  */

@@ -48,6 +48,14 @@
     return self;
 }
 
+- (void)creatPlayer {
+    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
+    _player = [[AVPlayer alloc] init];
+    ((AVPlayerLayer *)self.layer).player = _player;
+}
+
+
+#pragma mark -  外部接口
 - (void)ck_playWithURL:(NSURL *)url {
     AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:url];
     if (self.playerItem) {
@@ -71,13 +79,12 @@
 }
 
 
-
-- (void)creatPlayer {
-    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-    _player = [[AVPlayer alloc] init];
-    ((AVPlayerLayer *)self.layer).player = _player;
+- (void)ck_seekToTime:(NSTimeInterval)time {
+    if (!self.playerItem) {
+        return;
+    }
+    [self.playerItem seekToTime:CMTimeMake(time, 1.0)];
 }
-
 
 #pragma mark -  
 #pragma mark -  KVO
