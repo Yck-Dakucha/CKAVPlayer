@@ -7,9 +7,6 @@
 //
 
 #import "CKAVPlayerController.h"
-#import "CKAVPlayer.h"
-#import "CKAVPlayerOverlayView.h"
-#import "CKDurationSlider.h"
 
 @interface CKAVPlayerController ()<CKAVPlayerDelegate>
 
@@ -103,7 +100,40 @@
 }
 
 #pragma mark -  播放器代理
-- (void)ckAVPlayer:(CKAVPlayer *)avPlayer timeDidChange:(NSTimeInterval)time {
+- (void)ck_AVPlayer:(CKAVPlayer *)avPlayer statusDidChange:(CKAVPlayerPlayStatus)status error:(NSError *)error {
+    if (error) {
+        NSLog(@"VideoPlayer ERROR >>> %@",error);
+    }
+    switch (status) {
+        case CKAVPlayerPlayStatusUnKnow: {
+            [self.overlayView ck_showLoadingIndicator:nil];
+            break;
+        }
+        case CKAVPlayerPlayStatusReadyToPlay: {
+            [self.overlayView ck_hideLoadingIndicator:nil];
+            break;
+        }
+        case CKAVPlayerPlayStatusBuffering: {
+            [self.overlayView ck_showLoadingIndicator:nil];
+            break;
+        }
+        case CKAVPlayerPlayStatusBufferFinished: {
+            [self.overlayView ck_hideLoadingIndicator:nil];
+            break;
+        }
+        case CKAVPlayerPlayStatusPlayedToTheEnd: {
+            break;
+        }
+        case CKAVPlayerPlayStatusError: {
+            NSLog(@"ERROR");
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+- (void)ck_AVPlayer:(CKAVPlayer *)avPlayer timeDidChange:(NSTimeInterval)time {
     NSLog(@"player currentTime >>> %f",time);
     if (self.overlayView.durationSlider.maximumValue == 1) {
         self.overlayView.durationSlider.maximumValue = avPlayer.totalDuration;
@@ -114,7 +144,7 @@
     }
 }
 
-- (void)ckAVPlayer:(CKAVPlayer *)avPlayer loadedTimeDidChange:(NSTimeInterval)time {
+- (void)ck_AVPlayer:(CKAVPlayer *)avPlayer loadedTimeDidChange:(NSTimeInterval)time {
     if (self.isSeeking) {
         return;
     }
@@ -143,16 +173,16 @@
 }
 
 - (void)durationSliderValueChanged:(UISlider *)slider {
-//    [NSObject cancelPreviousPerformRequestsWithTarget:self.overlayView
-//                                             selector:@selector(animateHideBars)
-//                                               object:nil];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self.overlayView
+                                             selector:@selector(ck_animateHideBars)
+                                               object:nil];
 }
 
 - (void)durationSliderTouchEnded:(UISlider *)slider {
     [self.player ck_seekToTime:floor(slider.value)];
-//    [self.overlayView performSelector:@selector(animateHideBars)
-//                              withObject:nil
-//                              afterDelay:5.0];
+    [self.overlayView performSelector:@selector(ck_animateHideBars)
+                           withObject:nil
+                           afterDelay:5.0];
     self.isSeeking = NO;
 }
 

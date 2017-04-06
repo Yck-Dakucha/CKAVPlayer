@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "CKAVPlayer.h"
+#import "CKAVPlayerOverlayView.h"
 
 @interface CKAVPlayerController : NSObject
 /**

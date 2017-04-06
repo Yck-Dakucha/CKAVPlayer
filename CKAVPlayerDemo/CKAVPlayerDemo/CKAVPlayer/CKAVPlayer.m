@@ -16,6 +16,10 @@
 @property (nonatomic, strong) AVPlayerItem *playerItem;
 @property (nonatomic, strong) id timeObsever;
 /**
+ 当前播放时间
+ */
+@property (nonatomic, assign, readwrite) NSTimeInterval playBackTime;
+/**
  影片总时长
  */
 @property (nonatomic, assign, readwrite) NSTimeInterval totalDuration;
@@ -23,6 +27,10 @@
  已缓冲时长
  */
 @property (nonatomic, assign, readwrite) NSTimeInterval playableDuration;
+/**
+ 播放器状态
+ */
+@property (nonatomic, assign, readwrite) CKAVPlayerPlayStatus status;
 @end
 
 @implementation CKAVPlayer
@@ -54,6 +62,14 @@
     ((AVPlayerLayer *)self.layer).player = _player;
 }
 
+
+- (void)setStatus:(CKAVPlayerPlayStatus)status {
+    _status = status;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(ck_AVPlayer:statusDidChange:error:)]) {
+        __weak typeof(self) weakSelf = self;
+        [self.delegate ck_AVPlayer:weakSelf statusDidChange:status error:self.player.currentItem.error];
+    }
+}
 
 #pragma mark -  外部接口
 - (void)ck_playWithURL:(NSURL *)url {
@@ -88,7 +104,6 @@
 
 #pragma mark -  
 #pragma mark -  KVO
-
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     
     AVPlayerItem *item = (AVPlayerItem *)object;
@@ -99,13 +114,36 @@
         if (item.status == AVPlayerItemStatusReadyToPlay) {
             [self addTimeObseverForPlayer];
             self.totalDuration = CMTimeGetSeconds(item.duration);
+        }else if (item.status == AVPlayerItemStatusUnknown) {
+            self.status = CKAVPlayerPlayStatusUnKnow;
+        }else if (item.status == AVPlayerItemStatusFailed) {
+            self.status = CKAVPlayerPlayStatusError;
         }
     }else if ([keyPath isEqualToString:@"loadedTimeRanges"]) {
         NSTimeInterval loadedTime = [self getLoadedTime];
-        if (self.delegate && [self.delegate respondsToSelector:@selector(ckAVPlayer:loadedTimeDidChange:)]) {
+        self.playableDuration = loadedTime;
+        if (self.delegate && [self.delegate respondsToSelector:@selector(ck_AVPlayer:loadedTimeDidChange:)]) {
             __weak typeof(self) weakSelf = self;
-            [self.delegate ckAVPlayer:weakSelf loadedTimeDidChange:loadedTime];
+            [self.delegate ck_AVPlayer:weakSelf loadedTimeDidChange:loadedTime];
         }
+        if (self.playBackTime < self.totalDuration - 5) {
+            //缓冲不足
+            if (self.playableDuration < self.playBackTime + 2) {
+                self.status = CKAVPlayerPlayStatusBuffering;
+            }else {
+                self.status = CKAVPlayerPlayStatusBufferFinished;
+            }
+        }else {
+            if (self.status == CKAVPlayerPlayStatusBuffering) {
+                self.status = CKAVPlayerPlayStatusBufferFinished;
+            }
+        }
+        //播放结束
+        if (self.playBackTime == self.totalDuration) {
+            self.status = CKAVPlayerPlayStatusPlayedToTheEnd;
+        }
+    }else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 
@@ -113,9 +151,10 @@
 - (void)addTimeObseverForPlayer {
     __weak typeof(self) weakSelf = self;
     self.timeObsever = [self.player addPeriodicTimeObserverForInterval:CMTimeMake(1, 1) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
-        if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(ckAVPlayer:timeDidChange:)]) {
+        if (weakSelf.delegate && [weakSelf.delegate respondsToSelector:@selector(ck_AVPlayer:timeDidChange:)]) {
             NSTimeInterval timeInterval = CMTimeGetSeconds(time);
-            [weakSelf.delegate ckAVPlayer:weakSelf timeDidChange:timeInterval];
+            weakSelf.playBackTime = timeInterval;
+            [weakSelf.delegate ck_AVPlayer:weakSelf timeDidChange:timeInterval];
         }
     }];
 }
@@ -138,7 +177,6 @@
     if (self.playerItem) {
         [self.playerItem removeObserver:self forKeyPath:@"status"];
         [self.playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-
     }
 }
 @end
