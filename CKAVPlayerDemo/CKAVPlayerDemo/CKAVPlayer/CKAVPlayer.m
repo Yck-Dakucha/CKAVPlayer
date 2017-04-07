@@ -88,6 +88,9 @@
 - (void)ck_play {
     [self.player replaceCurrentItemWithPlayerItem:self.playerItem];
     [self.player play];
+    if (self.playerItem.status != AVPlayerItemStatusReadyToPlay) {
+        self.status = CKAVPlayerPlayStatusLoadVideoInfo;
+    }
 }
 
 - (void)ck_pause {
@@ -114,6 +117,7 @@
         if (item.status == AVPlayerItemStatusReadyToPlay) {
             [self addTimeObseverForPlayer];
             self.totalDuration = CMTimeGetSeconds(item.duration);
+            self.status = CKAVPlayerPlayStatusReadyToPlay;
         }else if (item.status == AVPlayerItemStatusUnknown) {
             self.status = CKAVPlayerPlayStatusUnKnow;
         }else if (item.status == AVPlayerItemStatusFailed) {
@@ -131,7 +135,9 @@
             if (self.playableDuration < self.playBackTime + 2) {
                 self.status = CKAVPlayerPlayStatusBuffering;
             }else {
-                self.status = CKAVPlayerPlayStatusBufferFinished;
+                if (self.status == CKAVPlayerPlayStatusBuffering) {
+                    self.status = CKAVPlayerPlayStatusBufferFinished;
+                }
             }
         }else {
             if (self.status == CKAVPlayerPlayStatusBuffering) {
@@ -139,7 +145,7 @@
             }
         }
         //播放结束
-        if (self.playBackTime == self.totalDuration) {
+        if (self.playBackTime == self.totalDuration && self.totalDuration != 0) {
             self.status = CKAVPlayerPlayStatusPlayedToTheEnd;
         }
     }else {

@@ -52,7 +52,38 @@
                     <view key="view" contentMode="scaleToFill" id="Oy4-jX-mHD">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qbw-d9-i5T">
+                                <rect key="frame" x="65" y="318.5" width="31" height="30"/>
+                                <state key="normal" title="播放"/>
+                                <connections>
+                                    <action selector="playAction:" destination="vGv-7R-kUl" eventType="touchUpInside" id="ncT-Ys-j37"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ilM-Nz-DPY">
+                                <rect key="frame" x="172" y="318.5" width="31" height="30"/>
+                                <state key="normal" title="暂停"/>
+                                <connections>
+                                    <action selector="pauseAction:" destination="vGv-7R-kUl" eventType="touchUpInside" id="EXN-aD-D4j"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ehw-PR-SKK">
+                                <rect key="frame" x="279" y="318.5" width="31" height="30"/>
+                                <state key="normal" title="停止"/>
+                                <connections>
+                                    <action selector="stopAction:" destination="vGv-7R-kUl" eventType="touchUpInside" id="TTP-ew-eKL"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="qbw-d9-i5T" firstAttribute="centerY" secondItem="Oy4-jX-mHD" secondAttribute="centerY" id="Ihf-IO-wrQ"/>
+                            <constraint firstItem="ilM-Nz-DPY" firstAttribute="centerX" secondItem="Oy4-jX-mHD" secondAttribute="centerX" id="O2s-WX-fk7"/>
+                            <constraint firstItem="qbw-d9-i5T" firstAttribute="leading" secondItem="Oy4-jX-mHD" secondAttribute="leading" constant="65" id="XEU-aH-YMe"/>
+                            <constraint firstItem="ehw-PR-SKK" firstAttribute="centerY" secondItem="Oy4-jX-mHD" secondAttribute="centerY" id="qhM-W3-iJZ"/>
+                            <constraint firstAttribute="trailing" secondItem="ehw-PR-SKK" secondAttribute="trailing" constant="65" id="vKc-uu-PKx"/>
+                            <constraint firstItem="ilM-Nz-DPY" firstAttribute="centerY" secondItem="Oy4-jX-mHD" secondAttribute="centerY" id="yeh-bo-k6e"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Reu-ja-aUQ" userLabel="First Responder" sceneMemberID="firstResponder"/>

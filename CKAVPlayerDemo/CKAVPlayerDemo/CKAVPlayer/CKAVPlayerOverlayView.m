@@ -281,6 +281,7 @@
         UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] init];
         view.translatesAutoresizingMaskIntoConstraints = NO;
         view.alpha = 0.0f;
+        view.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
         view.hidesWhenStopped = NO;
         [self addSubview:view];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:view

@@ -8,7 +8,7 @@
 
 #import "CKAVPlayerController.h"
 
-@interface CKAVPlayerController ()<CKAVPlayerDelegate>
+@interface CKAVPlayerController ()<CKAVPlayerDelegate,UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) CKAVPlayer *player;
 @property (nonatomic, strong) CKAVPlayerOverlayView *overlayView;
@@ -16,6 +16,23 @@
  是否正在Seek
  */
 @property (nonatomic, assign) BOOL isSeeking;
+/**
+ 单击手势
+ */
+@property (nonatomic, strong) UITapGestureRecognizer   *tapRecognizer;
+/**
+ 手动左快速滑屏幕
+ */
+@property (nonatomic, retain) UISwipeGestureRecognizer *leftSwipeRecognizer;
+/**
+ 手动右快速滑屏幕
+ */
+@property (nonatomic, retain) UISwipeGestureRecognizer *rightSwipeRecognizer;
+/**
+ 拖动，慢速移动
+ */
+@property (nonatomic, strong) UIPanGestureRecognizer   *panRecognizer;
+
 
 @end
 
@@ -41,6 +58,7 @@
         [_player addSubview:self.overlayView];
         [self configConstraints];
         [self configControlAction];
+        [self addGestureRecognizer];
 
     }
     return self;
@@ -54,6 +72,7 @@
         self.overlayView.frame = frame;
         [_player addSubview:self.overlayView];
         [self configControlAction];
+        [self addGestureRecognizer];
     }
     return self;
 }
@@ -99,6 +118,30 @@
 
 }
 
+#pragma mark - addGestureRecognizer
+- (void)addGestureRecognizer {
+    _tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+    _tapRecognizer.delegate = self;
+    [self.player addGestureRecognizer:_tapRecognizer];
+
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
+}
+
+
+#pragma mark - GestureRecognizerEvent
+// 处理皮肤的隐／现
+- (void)handleTap:(UITapGestureRecognizer *)recognizer
+{
+    if ([self.overlayView isBarVisiable]) {
+        [self.overlayView ck_animateHideBars];
+    } else {
+        [self.overlayView ck_animateShowBars];
+    }
+}
+
 #pragma mark -  播放器代理
 - (void)ck_AVPlayer:(CKAVPlayer *)avPlayer statusDidChange:(CKAVPlayerPlayStatus)status error:(NSError *)error {
     if (error) {
@@ -109,8 +152,14 @@
             [self.overlayView ck_showLoadingIndicator:nil];
             break;
         }
+        case CKAVPlayerPlayStatusLoadVideoInfo: {
+            [self.overlayView ck_showLoadingIndicator:nil];
+            break;
+        }
         case CKAVPlayerPlayStatusReadyToPlay: {
             [self.overlayView ck_hideLoadingIndicator:nil];
+            self.overlayView.durationSlider.maximumValue = avPlayer.totalDuration;
+            [self enableSlider:YES];
             break;
         }
         case CKAVPlayerPlayStatusBuffering: {
@@ -134,11 +183,7 @@
 }
 
 - (void)ck_AVPlayer:(CKAVPlayer *)avPlayer timeDidChange:(NSTimeInterval)time {
-    NSLog(@"player currentTime >>> %f",time);
-    if (self.overlayView.durationSlider.maximumValue == 1) {
-        self.overlayView.durationSlider.maximumValue = avPlayer.totalDuration;
-        [self enableSlider:YES];
-    }
+//    NSLog(@"player currentTime >>> %f",time);
     if (!self.isSeeking) {
         self.overlayView.durationSlider.value = time;
     }
@@ -232,12 +277,16 @@
  播放
  */
 - (void)ck_play {
+    self.overlayView.playPauseButton.selected = YES;
+    //播放
     [self.player ck_play];
 }
 /**
  暂停
  */
 - (void)ck_pause {
+    self.overlayView.playPauseButton.selected = NO;
+    //播放
     [self.player ck_pause];
 }
 @end

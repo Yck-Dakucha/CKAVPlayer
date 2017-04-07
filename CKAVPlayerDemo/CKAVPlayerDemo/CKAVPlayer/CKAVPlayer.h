@@ -12,6 +12,7 @@
 
 typedef NS_ENUM(NSInteger,CKAVPlayerPlayStatus) {
     CKAVPlayerPlayStatusUnKnow,         //未知状态
+    CKAVPlayerPlayStatusLoadVideoInfo,  //获取视频数据
     CKAVPlayerPlayStatusReadyToPlay,    //可以播放
     CKAVPlayerPlayStatusBuffering,      //正在缓冲
     CKAVPlayerPlayStatusBufferFinished, //缓冲结束

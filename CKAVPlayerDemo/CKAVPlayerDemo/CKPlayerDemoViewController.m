@@ -57,23 +57,17 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-//    [self.videoPlayer ck_play];
 }
 
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (IBAction)playAction:(UIButton *)sender {
+    [self.videoPlayerController ck_play];
+}
+- (IBAction)pauseAction:(UIButton *)sender {
+    [self.videoPlayerController ck_pause];
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (IBAction)stopAction:(UIButton *)sender {
 }
-*/
 
 @end

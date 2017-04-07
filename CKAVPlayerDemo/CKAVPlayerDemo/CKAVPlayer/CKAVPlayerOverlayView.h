@@ -48,6 +48,7 @@
  隐藏上下控制栏
  */
 - (void)ck_animateShowBars;
+
 /**
  显示loading状态
 
@@ -57,7 +58,7 @@
 /**
  隐藏loading状态
 
- @param completion 
+ @param completion
  */
 - (void)ck_hideLoadingIndicator:(void(^)())completion;
 
