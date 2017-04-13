@@ -24,7 +24,6 @@
         [self setTranslatesAutoresizingMaskIntoConstraints:NO];
         self.maximumTrackTintColor = [UIColor clearColor];
         self.minimumTrackTintColor = [UIColor orangeColor];
-        
         _progressView = [[UIProgressView alloc] init];
         self.progressView.translatesAutoresizingMaskIntoConstraints = NO;
         self.progressView.userInteractionEnabled = NO;
@@ -35,20 +34,6 @@
     }
     return self;
 }
-
-//- (void)setFrame:(CGRect)frame {
-//    [super setFrame:frame];
-//    if (self.progressView == nil) {
-//        return;
-//    }
-//    
-//    CGRect rect = self.bounds;
-//    rect.size.width -= POINT_OFFSET * 2;
-//    
-//    self.progressView.bounds = rect;
-//    self.progressView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-//        self.progressView.center = CGPointMake(self.frame.size.width * 0.5, self.frame.size.height * 0.5);
-//}
 
 - (void)addProgressViewConstraint {
     [self addSubview:self.progressView];

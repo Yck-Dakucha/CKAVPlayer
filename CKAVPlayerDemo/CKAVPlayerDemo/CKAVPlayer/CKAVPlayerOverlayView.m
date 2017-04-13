@@ -9,8 +9,9 @@
 #import "CKAVPlayerOverlayView.h"
 
 #define alColor(r, g, b, a) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:(a)]
-#define kCKBarHeight 44
-#define kCKMargin  10
+#define kCKBarHeight 44.f
+#define kCKSliderHeight 12.f
+#define kCKMargin  10.f
 #define kCKAnimationDuration 0.5f
 #define kCKHideBarDelay 5.f
 
@@ -36,7 +37,10 @@
  缓冲进度轮
  */
 @property (nonatomic, strong, readwrite) UIActivityIndicatorView *activityIndicatorView;
-
+/**
+ 全屏/返回小屏按钮
+ */
+@property (nonatomic, strong, readwrite) UIButton *fullScreenButton;
 @end
 
 @implementation CKAVPlayerOverlayView
@@ -248,6 +252,51 @@
         button;
     });
     
+    self.fullScreenButton = ({
+        UIButton *button = [[UIButton alloc] init];
+        [button setTitle:@"全屏" forState:UIControlStateNormal];
+        [button setTitle:@"小屏" forState:UIControlStateSelected];
+        button.titleLabel.font = [UIFont systemFontOfSize:15];
+        button.layer.borderColor = [UIColor whiteColor].CGColor;
+        button.layer.borderWidth = 0.5;
+        button.layer.cornerRadius = 5;
+        button.clipsToBounds = YES;
+        [button setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [self.bottomBar addSubview:button];
+        [self.bottomBar addConstraint:[NSLayoutConstraint constraintWithItem:button
+                                                                   attribute:NSLayoutAttributeRight
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.bottomBar
+                                                                   attribute:NSLayoutAttributeRight
+                                                                  multiplier:1.0
+                                                                    constant:-kCKMargin]];
+        
+        [self.bottomBar addConstraint:[NSLayoutConstraint constraintWithItem:button
+                                                                   attribute:NSLayoutAttributeCenterY
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.bottomBar
+                                                                   attribute:NSLayoutAttributeCenterY
+                                                                  multiplier:1.0
+                                                                    constant:0]];
+        [button addConstraint:[NSLayoutConstraint constraintWithItem:button
+                                                           attribute:NSLayoutAttributeWidth
+                                                           relatedBy:NSLayoutRelationEqual
+                                                              toItem:nil
+                                                           attribute:NSLayoutAttributeNotAnAttribute
+                                                          multiplier:1.0
+                                                            constant:44]];
+        [button addConstraint:[NSLayoutConstraint constraintWithItem:button
+                                                           attribute:NSLayoutAttributeHeight
+                                                           relatedBy:NSLayoutRelationEqual
+                                                              toItem:nil
+                                                           attribute:NSLayoutAttributeNotAnAttribute
+                                                          multiplier:1.0
+                                                            constant:30]];
+        
+        button;
+    });
+    
     self.durationSlider = ({
         CKDurationSlider *slider = [[CKDurationSlider alloc] init];
         slider.value = 0;
@@ -270,10 +319,16 @@
         [self.bottomBar addConstraint:[NSLayoutConstraint constraintWithItem:slider
                                                                     attribute:NSLayoutAttributeRight
                                                                     relatedBy:NSLayoutRelationEqual
-                                                                       toItem:self.bottomBar
-                                                                    attribute:NSLayoutAttributeRight
+                                                                       toItem:self.fullScreenButton
+                                                                    attribute:NSLayoutAttributeLeft
                                                                    multiplier:1.0
                                                                      constant:-kCKMargin]];
+//        [slider addConstraint:[NSLayoutConstraint constraintWithItem:slider
+//                                                           attribute:NSLayoutAttributeHeight
+//                                                           relatedBy:NSLayoutRelationEqual
+//                                                              toItem:nil
+//                                                           attribute:NSLayoutAttributeNotAnAttribute
+//                                                          multiplier:1.0 constant:kCKSliderHeight]];
         slider;
     });
     

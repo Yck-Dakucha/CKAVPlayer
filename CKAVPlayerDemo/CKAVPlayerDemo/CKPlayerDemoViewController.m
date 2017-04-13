@@ -9,7 +9,7 @@
 #import "CKPlayerDemoViewController.h"
 #import "CKAVPlayerController.h"
 
-@interface CKPlayerDemoViewController ()
+@interface CKPlayerDemoViewController ()<CKAVPlayerControllerDelegate>
 
 @property (nonatomic, strong) CKAVPlayerController *videoPlayerController;
 
@@ -53,13 +53,23 @@
                                                     multiplier:1.0
                                                       constant:[UIScreen mainScreen].bounds.size.width * 9/16.0]];
     [self.videoPlayerController ck_playWithURL:[NSURL URLWithString:@"http://znf.oss-cn-shanghai.aliyuncs.com/course/znf2017031401/znf2017031401001.mp4"]];
+    self.videoPlayerController.delegate = self;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 }
 
+#pragma mark -  delegate
+- (void)ck_AVPlayer:(CKAVPlayer *)avPlayer fullScreenStatus:(CKAVPlayerFullScreenStatus)status {
+    if (status == CKAVPlayerFullScreenStatusBeFullScreen) {
+        self.navigationController.navigationBarHidden = YES;
+    }else {
+        self.navigationController.navigationBarHidden = NO;
+    }
+}
 
+#pragma mark -  点击事件
 - (IBAction)playAction:(UIButton *)sender {
     [self.videoPlayerController ck_play];
 }

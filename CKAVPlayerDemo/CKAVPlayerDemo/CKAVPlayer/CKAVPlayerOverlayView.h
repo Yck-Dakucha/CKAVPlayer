@@ -28,6 +28,10 @@
  */
 @property (nonatomic, strong, readonly) CKDurationSlider *durationSlider;
 /**
+ 全屏/返回小屏按钮
+ */
+@property (nonatomic, strong, readonly) UIButton *fullScreenButton;
+/**
  上下视图显示情况
  */
 @property (nonatomic, assign, readonly) BOOL isBarVisiable;
