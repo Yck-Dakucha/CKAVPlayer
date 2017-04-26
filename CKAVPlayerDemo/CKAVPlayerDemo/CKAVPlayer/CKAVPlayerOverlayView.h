@@ -24,6 +24,14 @@
  */
 @property (nonatomic, strong, readonly) UIButton *playPauseButton;
 /**
+ 已播放时长
+ */
+@property (nonatomic, strong, readonly) UILabel *timeElapsedLabel;
+/**
+ 总时长
+ */
+@property (nonatomic, strong, readonly) UILabel *timeTotalLabel;
+/**
  进度条
  */
 @property (nonatomic, strong, readonly) CKDurationSlider *durationSlider;
@@ -65,5 +73,11 @@
  @param completion
  */
 - (void)ck_hideLoadingIndicator:(void(^)())completion;
+/**
+ 设置播放时间
 
+ @param currentTime <#currentTime description#>
+ @param totalTime <#totalTime description#>
+ */
+- (void)ck_setTimeLabelValues:(double)currentTime totalTime:(double)totalTime;
 @end

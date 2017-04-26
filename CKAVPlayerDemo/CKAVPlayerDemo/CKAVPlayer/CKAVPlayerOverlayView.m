@@ -41,6 +41,14 @@
  全屏/返回小屏按钮
  */
 @property (nonatomic, strong, readwrite) UIButton *fullScreenButton;
+/**
+ 已播放时长
+ */
+@property (nonatomic, strong, readwrite) UILabel *timeElapsedLabel;
+/**
+ 总时长
+ */
+@property (nonatomic, strong, readwrite) UILabel *timeTotalLabel;
 @end
 
 @implementation CKAVPlayerOverlayView
@@ -128,6 +136,29 @@
     }];
 }
 
+#pragma mark -  进度设置
+- (void)ck_setTimeLabelValues:(double)currentTime totalTime:(double)totalTime {
+    double minutesElapsed = floor(currentTime / 60.0);
+    double secondsElapsed = fmod(currentTime, 60.0);
+    if (isnan(minutesElapsed)) {
+        minutesElapsed = 0.0;
+    }
+    if (isnan(secondsElapsed)) {
+        secondsElapsed = 0.0;
+    }
+    self.timeElapsedLabel.text = [NSString stringWithFormat:@"%.0f:%02.0f", minutesElapsed, secondsElapsed];
+    
+    double minutesRemaining = floor(totalTime / 60.0);
+    double secondsRemaining = fmod(totalTime, 60.0);
+    if (isnan(minutesRemaining)) {
+        minutesRemaining = 0.0;
+    }
+    if (isnan(secondsRemaining)) {
+        secondsRemaining = 0.0;
+    }
+    
+    self.timeTotalLabel.text = [NSString stringWithFormat:@"%.0f:%02.0f", minutesRemaining, secondsRemaining] ;
+}
 
 #pragma mark -  设置UI
 - (void)creatUI {
@@ -263,6 +294,7 @@
         button.clipsToBounds = YES;
         [button setTranslatesAutoresizingMaskIntoConstraints:NO];
         [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [button setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
         [self.bottomBar addSubview:button];
         [self.bottomBar addConstraint:[NSLayoutConstraint constraintWithItem:button
                                                                    attribute:NSLayoutAttributeRight
@@ -297,6 +329,75 @@
         button;
     });
     
+    self.timeElapsedLabel = ({
+        UILabel *label = [[UILabel alloc] init];
+        label.font = [UIFont systemFontOfSize:13];
+        label.textColor = [UIColor whiteColor];
+        label.textAlignment = NSTextAlignmentRight;
+        label.adjustsFontSizeToFitWidth = YES;
+        label.text = @"0:00";
+        [label setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [self.bottomBar addSubview:label];
+        [self.bottomBar addConstraint:[NSLayoutConstraint constraintWithItem:label
+                                                                   attribute:NSLayoutAttributeLeft
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.playPauseButton
+                                                                   attribute:NSLayoutAttributeRight
+                                                                  multiplier:1.0
+                                                                    constant:kCKMargin]];
+        
+        [self.bottomBar addConstraint:[NSLayoutConstraint constraintWithItem:label
+                                                                   attribute:NSLayoutAttributeCenterY
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.bottomBar
+                                                                   attribute:NSLayoutAttributeCenterY
+                                                                  multiplier:1.0
+                                                                    constant:0]];
+        [label addConstraint:[NSLayoutConstraint constraintWithItem:label
+                                                           attribute:NSLayoutAttributeWidth
+                                                           relatedBy:NSLayoutRelationEqual
+                                                              toItem:nil
+                                                           attribute:NSLayoutAttributeNotAnAttribute
+                                                          multiplier:1.0
+                                                            constant:44]];
+        label;
+    });
+    
+    self.timeTotalLabel = ({
+        UILabel *label = [[UILabel alloc] init];
+        label.font = [UIFont systemFontOfSize:13];
+        label.textColor = [UIColor whiteColor];
+        label.textAlignment = NSTextAlignmentLeft;
+        label.adjustsFontSizeToFitWidth = YES;
+        label.text = @"0:00";
+        [label setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [label setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+        [self.bottomBar addSubview:label];
+        [self.bottomBar addConstraint:[NSLayoutConstraint constraintWithItem:label
+                                                                   attribute:NSLayoutAttributeRight
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.fullScreenButton
+                                                                   attribute:NSLayoutAttributeLeft
+                                                                  multiplier:1.0
+                                                                    constant:-kCKMargin]];
+        
+        [self.bottomBar addConstraint:[NSLayoutConstraint constraintWithItem:label
+                                                                   attribute:NSLayoutAttributeCenterY
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.bottomBar
+                                                                   attribute:NSLayoutAttributeCenterY
+                                                                  multiplier:1.0
+                                                                    constant:0]];
+        [label addConstraint:[NSLayoutConstraint constraintWithItem:label
+                                                           attribute:NSLayoutAttributeWidth
+                                                           relatedBy:NSLayoutRelationEqual
+                                                              toItem:nil
+                                                           attribute:NSLayoutAttributeNotAnAttribute
+                                                          multiplier:1.0
+                                                            constant:44]];
+        label;
+    });
+    
     self.durationSlider = ({
         CKDurationSlider *slider = [[CKDurationSlider alloc] init];
         slider.value = 0;
@@ -304,7 +405,7 @@
         [self.bottomBar addConstraint:[NSLayoutConstraint constraintWithItem:slider
                                                                     attribute:NSLayoutAttributeLeft
                                                                     relatedBy:NSLayoutRelationEqual
-                                                                       toItem:self.playPauseButton
+                                                                       toItem:self.timeElapsedLabel
                                                                     attribute:NSLayoutAttributeRight
                                                                    multiplier:1.0
                                                                      constant:kCKMargin]];
@@ -319,16 +420,10 @@
         [self.bottomBar addConstraint:[NSLayoutConstraint constraintWithItem:slider
                                                                     attribute:NSLayoutAttributeRight
                                                                     relatedBy:NSLayoutRelationEqual
-                                                                       toItem:self.fullScreenButton
+                                                                       toItem:self.timeTotalLabel
                                                                     attribute:NSLayoutAttributeLeft
                                                                    multiplier:1.0
                                                                      constant:-kCKMargin]];
-//        [slider addConstraint:[NSLayoutConstraint constraintWithItem:slider
-//                                                           attribute:NSLayoutAttributeHeight
-//                                                           relatedBy:NSLayoutRelationEqual
-//                                                              toItem:nil
-//                                                           attribute:NSLayoutAttributeNotAnAttribute
-//                                                          multiplier:1.0 constant:kCKSliderHeight]];
         slider;
     });
     

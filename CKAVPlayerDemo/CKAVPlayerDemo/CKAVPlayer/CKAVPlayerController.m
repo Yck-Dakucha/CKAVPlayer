@@ -188,6 +188,7 @@
             [self.overlayView ck_hideLoadingIndicator:nil];
             self.overlayView.durationSlider.minimumValue = 0.f;
             self.overlayView.durationSlider.maximumValue = avPlayer.totalDuration;
+            [self.overlayView ck_setTimeLabelValues:0 totalTime:avPlayer.totalDuration];
             [self enableSlider:YES];
             break;
         }
@@ -218,6 +219,7 @@
 //    NSLog(@"player currentTime >>> %f",time);
     if (!self.isSeeking) {
         self.overlayView.durationSlider.value = time;
+        [self.overlayView ck_setTimeLabelValues:time totalTime:avPlayer.totalDuration];
     }
     if ([self.delegate respondsToSelector:@selector(ck_AVPlayer:timeDidChange:)]) {
         [self.delegate ck_AVPlayer:avPlayer timeDidChange:time];
