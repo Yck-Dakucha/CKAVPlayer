@@ -11,11 +11,6 @@
 #import "CKAVPlayer.h"
 #import "CKAVPlayerOverlayView.h"
 
-typedef NS_ENUM(NSInteger,CKAVPlayerFullScreenStatus) {
-    CKAVPlayerFullScreenStatusBeFullScreen,   //全屏状态
-    CKAVPlayerFullScreenStatusBeNormal,       //小屏状态
-};
-
 @protocol CKAVPlayerControllerDelegate <NSObject>
 
 @required
@@ -44,7 +39,6 @@ typedef NS_ENUM(NSInteger,CKAVPlayerFullScreenStatus) {
  @param time 缓冲时间
  */
 - (void)ck_AVPlayer:(CKAVPlayer *)avPlayer loadedTimeDidChange:(NSTimeInterval)time;
-
 /**
  全屏状态变化
 
@@ -52,6 +46,12 @@ typedef NS_ENUM(NSInteger,CKAVPlayerFullScreenStatus) {
  @param status 全屏状态
  */
 - (void)ck_AVPlayer:(CKAVPlayer *)avPlayer fullScreenStatus:(CKAVPlayerFullScreenStatus)status;
+/**
+ 小屏时返回按钮点击
+
+ @param avPlayer player
+ */
+- (void)ck_AVPlayerBackButtonClickOnNormailWithPlayer:(CKAVPlayer *)avPlayer;
 
 @end
 
@@ -68,6 +68,14 @@ typedef NS_ENUM(NSInteger,CKAVPlayerFullScreenStatus) {
  全屏状态
  */
 @property (nonatomic, assign, readonly) CKAVPlayerFullScreenStatus fullScreenStatus;
+/**
+ 当前时间
+ */
+@property (nonatomic, assign, readonly) NSTimeInterval currentTime;
+/**
+ 视频名
+ */
+@property (nonatomic, copy) NSString *title;
 
 - (instancetype)initWithFrame:(CGRect)frame;
 /**

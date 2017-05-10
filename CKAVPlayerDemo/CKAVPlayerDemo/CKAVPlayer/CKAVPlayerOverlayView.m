@@ -49,6 +49,18 @@
  总时长
  */
 @property (nonatomic, strong, readwrite) UILabel *timeTotalLabel;
+/**
+ 返回按钮
+ */
+@property (nonatomic, strong, readwrite) UIButton *backButton;
+/**
+ 视频标题
+ */
+@property (nonatomic, strong, readwrite) UILabel *titleLabel;
+
+
+@property (nonatomic, strong) NSLayoutConstraint *topBarHightConstraint;
+
 @end
 
 @implementation CKAVPlayerOverlayView
@@ -58,6 +70,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         _isBarEnabled = YES;
+        _playerStatus = CKAVPlayerFullScreenStatusBeNormal;
         [self creatUI];
     }
     return self;
@@ -70,6 +83,17 @@
 }
 
 #pragma mark -  上下控制栏控制
+
+- (void)setPlayerStatus:(CKAVPlayerFullScreenStatus)playerStatus {
+    _playerStatus = playerStatus;
+    [self ck_animateHideBars];
+    if (playerStatus == CKAVPlayerFullScreenStatusBeFullScreen) {
+        self.topBarHightConstraint.constant = kCKBarHeight + 22;
+    }else {
+        self.topBarHightConstraint.constant = kCKBarHeight;
+    }
+}
+
 - (void)ck_animateHideBars {
     if (!self.isBarVisiable) {
         return;
@@ -77,8 +101,12 @@
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(ck_animateShowBars) object:nil];
     [UIView animateWithDuration:kCKAnimationDuration animations:^{
         self.topBar.alpha = self.bottomBar.alpha = 0.0f;
+        
     }completion:^(BOOL finished) {
     }];
+    if (self.playerStatus == CKAVPlayerFullScreenStatusBeFullScreen) {
+        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    }
 }
 
 - (void)ck_animateShowBars {
@@ -88,9 +116,13 @@
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(ck_animateHideBars) object:nil];
     [UIView animateWithDuration:kCKAnimationDuration animations:^{
         self.topBar.alpha = self.bottomBar.alpha = 1.0f;
+        
     }completion:^(BOOL finished) {
         [self performSelector:@selector(ck_animateHideBars) withObject:nil afterDelay:kCKHideBarDelay];
     }];
+    if (self.playerStatus == CKAVPlayerFullScreenStatusBeFullScreen) {
+        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    }
 }
 
 - (void)setIsBarEnabled:(BOOL)isBarEnabled {
@@ -190,13 +222,14 @@
                                                          attribute:NSLayoutAttributeRight
                                                         multiplier:1.0
                                                           constant:0]];
-        [view addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                         attribute:NSLayoutAttributeHeight
-                                                         relatedBy:NSLayoutRelationEqual
-                                                            toItem:nil
-                                                         attribute:NSLayoutAttributeNotAnAttribute
-                                                        multiplier:1.0
-                                                          constant:kCKBarHeight]];
+        self.topBarHightConstraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeHeight
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:nil
+                                                                  attribute:NSLayoutAttributeNotAnAttribute
+                                                                 multiplier:1.0
+                                                                   constant:kCKBarHeight];
+        [view addConstraint:self.topBarHightConstraint];
 
         view;
     });
@@ -464,6 +497,85 @@
                                                           constant:44]];
         view;
     });
+    
+    self.backButton = ({
+        UIButton *button = [[UIButton alloc] init];
+        [button setTitle:@"返回" forState:UIControlStateNormal];
+        button.titleLabel.font = [UIFont systemFontOfSize:15];
+        button.layer.borderColor = [UIColor whiteColor].CGColor;
+        button.layer.borderWidth = 0.5;
+        button.layer.cornerRadius = 5;
+        button.clipsToBounds = YES;
+        [button setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [self.topBar addSubview:button];
+        [self.topBar addConstraint:[NSLayoutConstraint constraintWithItem:button
+                                                                   attribute:NSLayoutAttributeLeft
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.topBar
+                                                                   attribute:NSLayoutAttributeLeft
+                                                                  multiplier:1.0
+                                                                    constant:kCKMargin]];
+        
+        [self.topBar addConstraint:[NSLayoutConstraint constraintWithItem:button
+                                                                   attribute:NSLayoutAttributeBottom
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.topBar
+                                                                   attribute:NSLayoutAttributeBottom
+                                                                  multiplier:1.0
+                                                                    constant:-(kCKBarHeight - 30)/2.0]];
+        [button addConstraint:[NSLayoutConstraint constraintWithItem:button
+                                                           attribute:NSLayoutAttributeWidth
+                                                           relatedBy:NSLayoutRelationEqual
+                                                              toItem:nil
+                                                           attribute:NSLayoutAttributeNotAnAttribute
+                                                          multiplier:1.0
+                                                            constant:44]];
+        [button addConstraint:[NSLayoutConstraint constraintWithItem:button
+                                                           attribute:NSLayoutAttributeHeight
+                                                           relatedBy:NSLayoutRelationEqual
+                                                              toItem:nil
+                                                           attribute:NSLayoutAttributeNotAnAttribute
+                                                          multiplier:1.0
+                                                            constant:30]];
+        
+        button;
+    });
+    
+    self.titleLabel = ({
+        UILabel *label = [[UILabel alloc] init];
+        label.font = [UIFont systemFontOfSize:13];
+        label.textColor = [UIColor whiteColor];
+        label.textAlignment = NSTextAlignmentRight;
+        label.adjustsFontSizeToFitWidth = YES;
+        [label setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [self.topBar addSubview:label];
+        [self.topBar addConstraint:[NSLayoutConstraint constraintWithItem:label
+                                                                   attribute:NSLayoutAttributeLeft
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.backButton
+                                                                   attribute:NSLayoutAttributeRight
+                                                                  multiplier:1.0
+                                                                    constant:kCKMargin]];
+        
+        [self.topBar addConstraint:[NSLayoutConstraint constraintWithItem:label
+                                                                   attribute:NSLayoutAttributeCenterY
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.backButton
+                                                                   attribute:NSLayoutAttributeCenterY
+                                                                  multiplier:1.0
+                                                                    constant:0]];
+        
+        [self.topBar addConstraint:[NSLayoutConstraint constraintWithItem:label
+                                                                attribute:NSLayoutAttributeRight
+                                                                relatedBy:NSLayoutRelationLessThanOrEqual
+                                                                   toItem:self.topBar
+                                                                attribute:NSLayoutAttributeRight
+                                                               multiplier:1.0
+                                                                 constant:-kCKMargin]];
+        label;
+    });
+
 }
 
 @end

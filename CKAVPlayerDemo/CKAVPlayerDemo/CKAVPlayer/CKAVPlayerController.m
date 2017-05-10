@@ -61,6 +61,7 @@
     if (self) {
         _player = [[CKAVPlayer alloc] init];
         _player.delegate = self;
+        _fullScreenStatus = CKAVPlayerFullScreenStatusBeNormal;
         [_player addSubview:self.overlayView];
         [self configConstraints];
         [self configControlAction];
@@ -133,6 +134,7 @@
 - (void)configControlAction{
     [self.overlayView.playPauseButton addTarget:self action:@selector(playOrPauseButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.overlayView.fullScreenButton addTarget:self action:@selector(fullScreenButtonClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.overlayView.backButton addTarget:self action:@selector(backButtonClick:) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark - addGestureRecognizer
@@ -313,6 +315,17 @@
     }
 }
 
+#pragma mark -  返回事件
+- (void)backButtonClick:(UIButton *)button {
+    if (self.fullScreenStatus == CKAVPlayerFullScreenStatusBeFullScreen) {
+        [self.overlayView.fullScreenButton sendActionsForControlEvents:UIControlEventTouchUpInside];
+    }else if (self.fullScreenStatus == CKAVPlayerFullScreenStatusBeNormal ) {
+        if ([self.delegate respondsToSelector:@selector(ck_AVPlayerBackButtonClickOnNormailWithPlayer:)]) {
+            [self.delegate ck_AVPlayerBackButtonClickOnNormailWithPlayer:self.player];
+        }
+    }
+}
+
 #pragma mark -  全屏事件
 - (void)fullScreenButtonClick:(UIButton *)button {
     button.selected = !button.selected;
@@ -325,6 +338,7 @@
 
 - (void)setFullScreenStatus:(CKAVPlayerFullScreenStatus)fullScreenStatus {
     _fullScreenStatus = fullScreenStatus;
+    self.overlayView.playerStatus = fullScreenStatus;
     if ([self.delegate respondsToSelector:@selector(ck_AVPlayer:fullScreenStatus:)]) {
         [self.delegate ck_AVPlayer:self.player fullScreenStatus:fullScreenStatus];
     }
@@ -468,5 +482,14 @@
     self.overlayView.playPauseButton.selected = NO;
     //播放
     [self.player ck_pause];
+}
+
+- (NSTimeInterval)currentTime {
+    return self.player.playBackTime;
+}
+
+- (void)setTitle:(NSString *)title {
+    _title = title;
+    self.overlayView.titleLabel.text = title;
 }
 @end

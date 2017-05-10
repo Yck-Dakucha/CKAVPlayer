@@ -10,7 +10,17 @@
 #import "CKGradualTransparentView.h"
 #import "CKDurationSlider.h"
 
+typedef NS_ENUM(NSInteger,CKAVPlayerFullScreenStatus) {
+    CKAVPlayerFullScreenStatusBeFullScreen,   //全屏状态
+    CKAVPlayerFullScreenStatusBeNormal,       //小屏状态
+};
+
 @interface CKAVPlayerOverlayView : UIView
+
+/**
+ 视图状态
+ */
+@property (nonatomic, assign,         ) CKAVPlayerFullScreenStatus playerStatus;
 /**
  播放器顶部控制
  */
@@ -46,12 +56,19 @@
 /**
  默认为YES,设置为NO时，animateShowBars则会失效
  */
-@property (nonatomic, assign) BOOL isBarEnabled;
+@property (nonatomic, assign,         ) BOOL isBarEnabled;
 /**
  缓冲进度轮
  */
 @property (nonatomic, strong, readonly) UIActivityIndicatorView *activityIndicatorView;
-
+/**
+ 返回按钮
+ */
+@property (nonatomic, strong, readonly) UIButton *backButton;
+/**
+ 视频标题
+ */
+@property (nonatomic, strong, readonly) UILabel *titleLabel;
 /**
  显示上下控制栏
  */
@@ -60,17 +77,16 @@
  隐藏上下控制栏
  */
 - (void)ck_animateShowBars;
-
 /**
  显示loading状态
 
- @param completion
+ @param completion <#completion description#>
  */
 - (void)ck_showLoadingIndicator:(void(^)())completion;
 /**
  隐藏loading状态
 
- @param completion
+ @param completion <#completion description#>
  */
 - (void)ck_hideLoadingIndicator:(void(^)())completion;
 /**

@@ -54,6 +54,7 @@
                                                       constant:[UIScreen mainScreen].bounds.size.width * 9/16.0]];
     [self.videoPlayerController ck_playWithURL:[NSURL URLWithString:@"http://znf.oss-cn-shanghai.aliyuncs.com/course/znf2017031401/znf2017031401001.mp4"]];
     self.videoPlayerController.delegate = self;
+    self.videoPlayerController.title = @"fuckTitle";
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -78,6 +79,10 @@
 }
 
 - (IBAction)stopAction:(UIButton *)sender {
+}
+
+- (void)ck_AVPlayerBackButtonClickOnNormailWithPlayer:(CKAVPlayer *)avPlayer {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end
