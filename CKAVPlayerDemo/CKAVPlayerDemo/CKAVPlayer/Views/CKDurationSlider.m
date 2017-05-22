@@ -38,20 +38,14 @@
 - (void)addProgressViewConstraint {
     [self addSubview:self.progressView];
     [self sendSubviewToBack:self.progressView];
+    
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView
-                                                    attribute:NSLayoutAttributeWidth
-                                                    relatedBy:NSLayoutRelationEqual
-                                                       toItem:self
-                                                    attribute:NSLayoutAttributeWidth
-                                                   multiplier:1.0
-                                                      constant:- POINT_OFFSET * 2]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView
-                                                     attribute:NSLayoutAttributeHeight
+                                                     attribute:NSLayoutAttributeWidth
                                                      relatedBy:NSLayoutRelationEqual
                                                         toItem:self
-                                                     attribute:NSLayoutAttributeHeight
+                                                     attribute:NSLayoutAttributeWidth
                                                     multiplier:1.0
-                                                      constant:0]];
+                                                      constant:- 2 * POINT_OFFSET]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView
                                                      attribute:NSLayoutAttributeCenterX
                                                      relatedBy:NSLayoutRelationEqual
@@ -65,7 +59,14 @@
                                                         toItem:self
                                                      attribute:NSLayoutAttributeCenterY
                                                     multiplier:1.0
-                                                      constant:0]];
+                                                      constant:1]];
+    [self.progressView addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView
+                                                     attribute:NSLayoutAttributeHeight
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:nil
+                                                     attribute:NSLayoutAttributeNotAnAttribute
+                                                    multiplier:1.0
+                                                      constant:2]];
     
 }
 

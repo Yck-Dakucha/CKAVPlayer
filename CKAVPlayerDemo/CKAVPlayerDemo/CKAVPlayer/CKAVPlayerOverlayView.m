@@ -457,6 +457,13 @@
                                                                     attribute:NSLayoutAttributeLeft
                                                                    multiplier:1.0
                                                                      constant:-kCKMargin]];
+        [slider addConstraint:[NSLayoutConstraint constraintWithItem:slider
+                                                          attribute:NSLayoutAttributeHeight
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:nil
+                                                          attribute:NSLayoutAttributeNotAnAttribute
+                                                         multiplier:1.0
+                                                           constant:20]];
         slider;
     });
     
