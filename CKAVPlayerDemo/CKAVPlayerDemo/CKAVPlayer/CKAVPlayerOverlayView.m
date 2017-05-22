@@ -8,12 +8,13 @@
 
 #import "CKAVPlayerOverlayView.h"
 
-#define alColor(r, g, b, a) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:(a)]
-#define kCKBarHeight 44.f
-#define kCKSliderHeight 12.f
-#define kCKMargin  10.f
+#define kCKBarHeight         44.f
+#define kCKSliderHeight      12.f
+#define kCKMargin            10.f
 #define kCKAnimationDuration 0.5f
-#define kCKHideBarDelay 5.f
+#define kCKHideBarDelay       5.f
+#define kCKButtonWidth       30.f
+#define kCKLableWidth        40.f
 
 @interface CKAVPlayerOverlayView ()
 
@@ -273,13 +274,8 @@
     
     self.playPauseButton = ({
         UIButton *button = [[UIButton alloc] init];
-        [button setTitle:@"播放" forState:UIControlStateNormal];
-        [button setTitle:@"暂停" forState:UIControlStateSelected];
-        button.titleLabel.font = [UIFont systemFontOfSize:15];
-        button.layer.borderColor = [UIColor whiteColor].CGColor;
-        button.layer.borderWidth = 0.5;
-        button.layer.cornerRadius = 5;
-        button.clipsToBounds = YES;
+        [button setImage:[UIImage imageNamed:@"CKAVPlayer-play"] forState:UIControlStateNormal];
+        [button setImage:[UIImage imageNamed:@"CKAVPlayer-pause"] forState:UIControlStateSelected];
         [button setTranslatesAutoresizingMaskIntoConstraints:NO];
         [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [self.bottomBar addSubview:button];
@@ -304,7 +300,7 @@
                                                             toItem:nil
                                                          attribute:NSLayoutAttributeNotAnAttribute
                                                         multiplier:1.0
-                                                          constant:44]];
+                                                          constant:kCKButtonWidth]];
         [button addConstraint:[NSLayoutConstraint constraintWithItem:button
                                                          attribute:NSLayoutAttributeHeight
                                                          relatedBy:NSLayoutRelationEqual
@@ -318,13 +314,8 @@
     
     self.fullScreenButton = ({
         UIButton *button = [[UIButton alloc] init];
-        [button setTitle:@"全屏" forState:UIControlStateNormal];
-        [button setTitle:@"小屏" forState:UIControlStateSelected];
-        button.titleLabel.font = [UIFont systemFontOfSize:15];
-        button.layer.borderColor = [UIColor whiteColor].CGColor;
-        button.layer.borderWidth = 0.5;
-        button.layer.cornerRadius = 5;
-        button.clipsToBounds = YES;
+        [button setImage:[UIImage imageNamed:@"CKAVPlayer-fullscreen"] forState:UIControlStateNormal];
+        [button setImage:[UIImage imageNamed:@"CKAVPlayer-shrinkscreen"] forState:UIControlStateSelected];
         [button setTranslatesAutoresizingMaskIntoConstraints:NO];
         [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [button setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
@@ -350,7 +341,7 @@
                                                               toItem:nil
                                                            attribute:NSLayoutAttributeNotAnAttribute
                                                           multiplier:1.0
-                                                            constant:44]];
+                                                            constant:kCKButtonWidth]];
         [button addConstraint:[NSLayoutConstraint constraintWithItem:button
                                                            attribute:NSLayoutAttributeHeight
                                                            relatedBy:NSLayoutRelationEqual
@@ -392,7 +383,7 @@
                                                               toItem:nil
                                                            attribute:NSLayoutAttributeNotAnAttribute
                                                           multiplier:1.0
-                                                            constant:44]];
+                                                            constant:kCKLableWidth]];
         label;
     });
     
@@ -427,13 +418,14 @@
                                                               toItem:nil
                                                            attribute:NSLayoutAttributeNotAnAttribute
                                                           multiplier:1.0
-                                                            constant:44]];
+                                                            constant:kCKLableWidth]];
         label;
     });
     
     self.durationSlider = ({
         CKDurationSlider *slider = [[CKDurationSlider alloc] init];
         slider.value = 0;
+        [slider setThumbImage:[UIImage imageNamed:@"CKAVPlayer-point"] forState:UIControlStateNormal];
         [self.bottomBar addSubview:slider];
         [self.bottomBar addConstraint:[NSLayoutConstraint constraintWithItem:slider
                                                                     attribute:NSLayoutAttributeLeft
@@ -507,12 +499,7 @@
     
     self.backButton = ({
         UIButton *button = [[UIButton alloc] init];
-        [button setTitle:@"返回" forState:UIControlStateNormal];
-        button.titleLabel.font = [UIFont systemFontOfSize:15];
-        button.layer.borderColor = [UIColor whiteColor].CGColor;
-        button.layer.borderWidth = 0.5;
-        button.layer.cornerRadius = 5;
-        button.clipsToBounds = YES;
+        [button setImage:[UIImage imageNamed:@"CKAVPlayer-back"] forState:UIControlStateNormal];
         [button setTranslatesAutoresizingMaskIntoConstraints:NO];
         [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [self.topBar addSubview:button];
@@ -537,7 +524,7 @@
                                                               toItem:nil
                                                            attribute:NSLayoutAttributeNotAnAttribute
                                                           multiplier:1.0
-                                                            constant:44]];
+                                                            constant:kCKButtonWidth]];
         [button addConstraint:[NSLayoutConstraint constraintWithItem:button
                                                            attribute:NSLayoutAttributeHeight
                                                            relatedBy:NSLayoutRelationEqual
