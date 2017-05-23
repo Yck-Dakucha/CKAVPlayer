@@ -173,20 +173,27 @@
 }
 
 #pragma mark -  播放器代理
-- (void)ck_AVPlayer:(CKAVPlayer *)avPlayer statusDidChange:(CKAVPlayerPlayStatus)status error:(NSError *)error {
+- (BOOL)ck_AVPlayerVideoShouldPlay:(CKAVPlayer *)avPlayer {
+    if ([self.delegate respondsToSelector:@selector(ck_AVPlayerVideoShouldPlay:)]) {
+        return [self.delegate ck_AVPlayerVideoShouldPlay:avPlayer];
+    }else {
+        return YES;
+    }
+}
+- (void)ck_AVPlayer:(CKAVPlayer *)avPlayer playerStatusDidChange:(CKAVPlayerStatus)status error:(NSError *)error {
     if (error) {
         NSLog(@"VideoPlayer ERROR >>> %@",error);
     }
     switch (status) {
-        case CKAVPlayerPlayStatusUnKnow: {
+        case CKAVPlayerStatusUnKnow: {
             [self.overlayView ck_showLoadingIndicator:nil];
             break;
         }
-        case CKAVPlayerPlayStatusLoadVideoInfo: {
+        case CKAVPlayerStatusLoadVideoInfo: {
             [self.overlayView ck_showLoadingIndicator:nil];
             break;
         }
-        case CKAVPlayerPlayStatusReadyToPlay: {
+        case CKAVPlayerStatusReadyToPlay: {
             [self.overlayView ck_hideLoadingIndicator:nil];
             self.overlayView.durationSlider.minimumValue = 0.f;
             self.overlayView.durationSlider.maximumValue = avPlayer.totalDuration;
@@ -194,26 +201,32 @@
             [self enableSlider:YES];
             break;
         }
-        case CKAVPlayerPlayStatusBuffering: {
+        case CKAVPlayerStatusBuffering: {
             [self.overlayView ck_showLoadingIndicator:nil];
             break;
         }
-        case CKAVPlayerPlayStatusBufferFinished: {
+        case CKAVPlayerStatusBufferFinished: {
             [self.overlayView ck_hideLoadingIndicator:nil];
             break;
         }
-        case CKAVPlayerPlayStatusPlayedToTheEnd: {
+        case CKAVPlayerStatusPlayedToTheEnd: {
             break;
         }
-        case CKAVPlayerPlayStatusError: {
+        case CKAVPlayerStatusError: {
             NSLog(@"ERROR");
             break;
         }
         default:
             break;
     }
-    if ([self.delegate respondsToSelector:@selector(ck_AVPlayer:playStatusDidChange:error:)]) {
-        [self.delegate ck_AVPlayer:avPlayer playStatusDidChange:status error:error];
+    if ([self.delegate respondsToSelector:@selector(ck_AVPlayer:playerStatusDidChange:error:)]) {
+        [self.delegate ck_AVPlayer:avPlayer playerStatusDidChange:status error:error];
+    }
+}
+
+- (void)ck_AVPlayer:(CKAVPlayer *)avPlayer timeControlStatusDidChange:(CKAVPlayerTimeControlStatus)status {
+    if ([self.delegate respondsToSelector:@selector(ck_AVPlayer:timeControlStatusDidChange:)]) {
+        [self.delegate ck_AVPlayer:avPlayer timeControlStatusDidChange:status];
     }
 }
 
@@ -238,10 +251,7 @@
     }
 }
 
-#pragma mark -  设置播放信息
-- (void)ck_playWithURL:(NSURL *)url {
-    [self.player ck_playWithURL:url];
-}
+
 #pragma mark -
 #pragma mark -  播放器控制
 #pragma mark -  播放暂停
@@ -467,6 +477,15 @@
 
 #pragma mark -
 #pragma mark -  外部接口
+
+/**
+ 设置播放信息
+
+ @param url 视频播放地址
+ */
+- (void)ck_playWithURL:(NSURL *)url {
+    [self.player ck_playWithURL:url];
+}
 /**
  播放
  */
@@ -498,5 +517,9 @@
 - (void)setTitle:(NSString *)title {
     _title = title;
     self.overlayView.titleLabel.text = title;
+}
+
+- (CKAVPlayerTimeControlStatus)timeControlStatus {
+    return self.player.timeControlStatus;
 }
 @end

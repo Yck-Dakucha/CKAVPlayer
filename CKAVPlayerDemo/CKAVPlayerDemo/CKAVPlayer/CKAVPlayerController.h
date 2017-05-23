@@ -18,13 +18,27 @@
 @optional
 
 /**
- 播放状态变化
+ 视频预备播放
+ 
+ @param avPlayer player
+ @return 是否播放  返回YES 播放 NO 不播放
+ */
+- (BOOL)ck_AVPlayerVideoShouldPlay:(CKAVPlayer *)avPlayer;
+/**
+ 播放器状态变化
  
  @param avPlayer player
  @param status 播放状态
  @param error 错误返回
  */
-- (void)ck_AVPlayer:(CKAVPlayer *)avPlayer playStatusDidChange:(CKAVPlayerPlayStatus)status error:(NSError *)error;
+- (void)ck_AVPlayer:(CKAVPlayer *)avPlayer playerStatusDidChange:(CKAVPlayerStatus)status error:(NSError *)error;
+/**
+ 播放中状态变化
+ 
+ @param avPlayer player
+ @param status 播放状态
+ */
+- (void)ck_AVPlayer:(CKAVPlayer *)avPlayer timeControlStatusDidChange:(CKAVPlayerTimeControlStatus)status;
 /**
  播放时间变化
  
@@ -63,11 +77,15 @@
 /**
  代理
  */
-@property (nonatomic, weak) id<CKAVPlayerControllerDelegate> delegate;
+@property (nonatomic, weak            ) id<CKAVPlayerControllerDelegate> delegate;
 /**
  全屏状态
  */
 @property (nonatomic, assign, readonly) CKAVPlayerFullScreenStatus fullScreenStatus;
+/**
+ 播放状态
+ */
+@property (nonatomic, assign, readonly) CKAVPlayerTimeControlStatus timeControlStatus;
 /**
  当前时间
  */
@@ -75,7 +93,7 @@
 /**
  视频名
  */
-@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy            ) NSString *title;
 
 - (instancetype)initWithFrame:(CGRect)frame;
 /**
