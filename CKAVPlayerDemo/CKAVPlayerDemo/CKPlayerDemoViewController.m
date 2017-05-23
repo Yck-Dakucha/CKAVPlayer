@@ -20,7 +20,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-//    self.videoPlayerController = [[CKAVPlayerController alloc] initWithFrame:CGRectMake(0, 64, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 9/16.0)];
+
     self.videoPlayerController = [[CKAVPlayerController alloc] init];
     [self.view addSubview:self.videoPlayerController.view];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoPlayerController.view
@@ -70,6 +70,10 @@
     }
 }
 
+- (void)ck_AVPlayerBackButtonClickOnNormailWithPlayer:(CKAVPlayer *)avPlayer {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 #pragma mark -  点击事件
 - (IBAction)playAction:(UIButton *)sender {
     [self.videoPlayerController ck_play];
@@ -79,10 +83,9 @@
 }
 
 - (IBAction)stopAction:(UIButton *)sender {
+    [self.videoPlayerController ck_stop];
 }
 
-- (void)ck_AVPlayerBackButtonClickOnNormailWithPlayer:(CKAVPlayer *)avPlayer {
-    [self.navigationController popViewControllerAnimated:YES];
-}
+
 
 @end

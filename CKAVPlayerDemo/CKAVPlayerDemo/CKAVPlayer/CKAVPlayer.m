@@ -97,6 +97,17 @@
     [self.player pause];
 }
 
+/**
+ 停止
+ */
+- (void)ck_stop {
+    [self.player cancelPendingPrerolls];
+    [self.player seekToTime:CMTimeMake(0, 1.0)];
+    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:@"about:blank"]];
+    [self.player replaceCurrentItemWithPlayerItem:playerItem];
+    [self.player cancelPendingPrerolls];
+}
+
 
 - (void)ck_seekToTime:(NSTimeInterval)time {
     if (!self.playerItem) {

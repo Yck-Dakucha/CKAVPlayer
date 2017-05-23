@@ -88,6 +88,10 @@ typedef NS_ENUM(NSInteger,CKAVPlayerPlayStatus) {
  */
 - (void)ck_pause;
 /**
+ 停止
+ */
+- (void)ck_stop;
+/**
  跳转到时间
 
  @param time 目标时间

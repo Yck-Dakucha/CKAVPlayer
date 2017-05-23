@@ -483,6 +483,13 @@
     //播放
     [self.player ck_pause];
 }
+/**
+ 停止
+ */
+- (void)ck_stop {
+    self.overlayView.playPauseButton.selected = NO;
+    [self.player ck_stop];
+}
 
 - (NSTimeInterval)currentTime {
     return self.player.playBackTime;

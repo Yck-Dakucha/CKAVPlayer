@@ -92,4 +92,9 @@
  暂停
  */
 - (void)ck_pause;
+/**
+ 停止
+ */
+- (void)ck_stop;
+
 @end
