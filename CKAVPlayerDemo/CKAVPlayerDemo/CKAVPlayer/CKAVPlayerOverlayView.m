@@ -149,7 +149,7 @@
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(ck_hideLoadingIndicator:) object:nil];
     [self.activityIndicatorView startAnimating];
     [UIView animateWithDuration:kCKAnimationDuration animations:^{
-        self.activityIndicatorView.alpha = 1.0f;
+        self.activityIndicatorView.superview.alpha = 1.0f;
     }completion:^(BOOL finished) {
         if (finished && completion) {
             completion();
@@ -161,7 +161,7 @@
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(ck_showLoadingIndicator:) object:nil];
     [self.activityIndicatorView stopAnimating];
     [UIView animateWithDuration:kCKAnimationDuration animations:^{
-        self.activityIndicatorView.alpha = 0.0f;
+        self.activityIndicatorView.superview.alpha = 0.0f;
     }completion:^(BOOL finished) {
         if (finished && completion) {
             completion();
@@ -459,13 +459,50 @@
         slider;
     });
     
+    UIView *backView = ({
+        UIView *view = [[UIView alloc] init];
+        view.translatesAutoresizingMaskIntoConstraints = NO;
+        view.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.4];
+        view.layer.cornerRadius = 10;
+        view.alpha = 0.0;
+        [self addSubview:view];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                         attribute:NSLayoutAttributeCenterX
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:self
+                                                         attribute:NSLayoutAttributeCenterX
+                                                        multiplier:1.0
+                                                          constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                         attribute:NSLayoutAttributeCenterY
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:self
+                                                         attribute:NSLayoutAttributeCenterY
+                                                        multiplier:1.0
+                                                          constant:0]];
+        [view addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                         attribute:NSLayoutAttributeWidth
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:nil
+                                                         attribute:NSLayoutAttributeNotAnAttribute
+                                                        multiplier:1.0
+                                                          constant:44]];
+        [view addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                         attribute:NSLayoutAttributeHeight
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:nil
+                                                         attribute:NSLayoutAttributeNotAnAttribute
+                                                        multiplier:1.0
+                                                          constant:44]];
+        view;
+    });
+    
     self.activityIndicatorView = ({
         UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] init];
         view.translatesAutoresizingMaskIntoConstraints = NO;
-        view.alpha = 0.0f;
-        view.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+        view.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
         view.hidesWhenStopped = NO;
-        [self addSubview:view];
+        [backView addSubview:view];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:view
                                                          attribute:NSLayoutAttributeCenterX
                                                          relatedBy:NSLayoutRelationEqual

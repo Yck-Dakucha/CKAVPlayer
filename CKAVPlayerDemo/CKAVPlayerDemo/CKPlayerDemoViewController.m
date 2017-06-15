@@ -74,6 +74,7 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+
 #pragma mark -  点击事件
 - (IBAction)playAction:(UIButton *)sender {
     [self.videoPlayerController ck_play];
