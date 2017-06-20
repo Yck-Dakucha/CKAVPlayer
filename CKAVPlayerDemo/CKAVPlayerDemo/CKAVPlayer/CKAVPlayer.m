@@ -39,16 +39,17 @@
     return [AVPlayerLayer class];
 }
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        [self creatPlayer];
-    }
-    return self;
-}
+//- (instancetype)init
+//{
+//    self = [super init];
+//    if (self) {
+//        [self creatPlayer];
+//    }
+//    return self;
+//}
 
-- (instancetype)initWithFrame:(CGRect)frame {
+- (instancetype)initWithFrame:(CGRect)frame
+{
     self = [super initWithFrame:frame];
     if (self) {
         [self creatPlayer];
@@ -57,7 +58,6 @@
 }
 
 - (void)creatPlayer {
-    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
     _player = [[AVPlayer alloc] init];
     ((AVPlayerLayer *)self.layer).player = _player;
 }

@@ -78,7 +78,7 @@ typedef NS_ENUM(NSInteger,CKAVPlayerTimeControlStatus) {
 /**
  播放器代理
  */
-@property (nonatomic, weak) id<CKAVPlayerDelegate> delegate;
+@property (nonatomic, weak            ) id<CKAVPlayerDelegate> delegate;
 /**
  播放器状态
  */
@@ -100,6 +100,17 @@ typedef NS_ENUM(NSInteger,CKAVPlayerTimeControlStatus) {
  已缓冲时长
  */
 @property (nonatomic, assign, readonly) NSTimeInterval playableDuration;
+
+
+/**
+ 小屏大小的ParentView
+ */
+@property (nonatomic, weak,           ) UIView *normalParentView;
+/**
+ 小屏大小的Frame
+ */
+@property (nonatomic, assign          ) CGRect normalFrame;
+
 /**
  设置播放信息
 

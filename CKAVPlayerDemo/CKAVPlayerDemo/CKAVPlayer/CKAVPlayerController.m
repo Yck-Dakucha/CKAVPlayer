@@ -56,40 +56,42 @@
     return _overlayView;
 }
 
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        _player = [[CKAVPlayer alloc] init];
-        _player.delegate = self;
-        _fullScreenStatus = CKAVPlayerFullScreenStatusBeNormal;
-        [_player addSubview:self.overlayView];
-        [self configConstraints];
-        [self configControlAction];
-        [self addGestureRecognizer];
-        //订阅UIApplicationDidChangeStatusBarOrientationNotification通知
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(deviceDidChangeStatusBarOrientation:)
-                                                     name:UIApplicationDidChangeStatusBarOrientationNotification
-                                                   object:nil];
-
-    }
-    return self;
-}
+//- (instancetype)init {
+//    self = [super init];
+//    if (self) {
+//        _player = [[CKAVPlayer alloc] init];
+//        _player.delegate = self;
+//        _fullScreenStatus = CKAVPlayerFullScreenStatusBeNormal;
+//        [_player addSubview:self.overlayView];
+//        [self configConstraints];
+//        [self configControlAction];
+//        [self addGestureRecognizer];
+//        //订阅UIApplicationDidChangeStatusBarOrientationNotification通知
+////        [[NSNotificationCenter defaultCenter] addObserver:self
+////                                                 selector:@selector(deviceDidChangeStatusBarOrientation:)
+////                                                     name:UIApplicationDidChangeStatusBarOrientationNotification
+////                                                   object:nil];
+//
+//    }
+//    return self;
+//}
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super init];
     if (self) {
         _player = [[CKAVPlayer alloc] initWithFrame:frame];
         _player.delegate = self;
-        self.overlayView.frame = frame;
+//        self.overlayView.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
+        _fullScreenStatus = CKAVPlayerFullScreenStatusBeNormal;
         [_player addSubview:self.overlayView];
+        [self configConstraints];
         [self configControlAction];
         [self addGestureRecognizer];
-        //订阅UIApplicationDidChangeStatusBarOrientationNotification通知
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(deviceDidChangeStatusBarOrientation:)
-                                                     name:UIApplicationDidChangeStatusBarOrientationNotification
-                                                   object:nil];
+//        //订阅UIApplicationDidChangeStatusBarOrientationNotification通知
+//        [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                 selector:@selector(deviceDidChangeStatusBarOrientation:)
+//                                                     name:UIApplicationDidChangeStatusBarOrientationNotification
+//                                                   object:nil];
 
     }
     return self;
@@ -340,9 +342,12 @@
 - (void)fullScreenButtonClick:(UIButton *)button {
     button.selected = !button.selected;
     if (button.selected) {
-        [self changeDeviceOrientation:UIInterfaceOrientationLandscapeLeft];
+//        [self changeDeviceOrientation:UIInterfaceOrientationLandscapeLeft];
+        [self enterFullSCreen];
     }else {
-        [self changeDeviceOrientation:UIInterfaceOrientationPortrait];
+//        [self changeDeviceOrientation:UIInterfaceOrientationPortrait];
+        [self exitFullscreen];
+        
     }
 }
 
@@ -354,126 +359,186 @@
     }
 }
 
-//手动设置设备方向，这样就能收到转屏事件
-- (void)changeDeviceOrientation:(UIInterfaceOrientation)toOrientation
-{
-    NSString *orientationBase64Str = @"c2V0T3JpZW50YXRpb246";
-    NSData *decodeData = [[NSData alloc] initWithBase64EncodedString:orientationBase64Str options:0];
-    NSString *selectorStr = [[NSString alloc] initWithData:decodeData encoding:NSASCIIStringEncoding];
-    SEL selector = NSSelectorFromString(selectorStr);
-    if ([[UIDevice currentDevice] respondsToSelector:selector])
-    {
-        //        NSLog(@"手动设置设备方向，这样就能收到转屏事件");
-        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[UIDevice instanceMethodSignatureForSelector:selector]];
-        [invocation setSelector:selector];
-        [invocation setTarget:[UIDevice currentDevice]];
-        int val = toOrientation;
-        [invocation setArgument:&val atIndex:2];
-        [invocation invoke];
+////手动设置设备方向，这样就能收到转屏事件
+//- (void)changeDeviceOrientation:(UIInterfaceOrientation)toOrientation
+//{
+//    NSString *orientationBase64Str = @"c2V0T3JpZW50YXRpb246";
+//    NSData *decodeData = [[NSData alloc] initWithBase64EncodedString:orientationBase64Str options:0];
+//    NSString *selectorStr = [[NSString alloc] initWithData:decodeData encoding:NSASCIIStringEncoding];
+//    SEL selector = NSSelectorFromString(selectorStr);
+//    if ([[UIDevice currentDevice] respondsToSelector:selector])
+//    {
+//        //        NSLog(@"手动设置设备方向，这样就能收到转屏事件");
+//        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[UIDevice instanceMethodSignatureForSelector:selector]];
+//        [invocation setSelector:selector];
+//        [invocation setTarget:[UIDevice currentDevice]];
+//        int val = toOrientation;
+//        [invocation setArgument:&val atIndex:2];
+//        [invocation invoke];
+//    }
+//}
+
+//// deviceDidChangeStatusBarOrientation
+//- (void)deviceDidChangeStatusBarOrientation: (NSNotification*)notify
+//{
+////    UIViewController *currentVC = [ZXApplicationTools getCurrentVC];
+//    //收到的消息是上一个InterfaceOrientation的值
+//    UIInterfaceOrientation currInterfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+//    switch (currInterfaceOrientation)
+//    {
+//        case UIInterfaceOrientationPortrait:
+//        case UIInterfaceOrientationPortraitUpsideDown:
+//        {
+//            if (self.player) {
+//                float width = self.originalFrame.size.width;
+//                float height = self.originalFrame.size.height;
+//                float originX = self.originalFrame.origin.x;
+//                float originY = self.originalFrame.origin.y;
+//                [self.player.superview setNeedsUpdateConstraints];
+//                [self.player setNeedsUpdateConstraints];
+//                [self.player.superview.constraints enumerateObjectsUsingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//                    @autoreleasepool {
+//                        if (obj.firstItem == self.player) {
+//                            if (obj.firstAttribute == NSLayoutAttributeLeft) {
+//                                obj.constant = originX;
+//                            }else if (obj.firstAttribute == NSLayoutAttributeTop) {
+//                                obj.constant = originY;
+//                            }
+//                        }
+//                        
+//                    }
+//                }];
+//                [self.player.constraints enumerateObjectsUsingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//                    @autoreleasepool {
+//                        if (obj.firstAttribute == NSLayoutAttributeWidth) {
+//                            obj.constant = width;
+//                        }else if (obj.firstAttribute == NSLayoutAttributeHeight) {
+//                            obj.constant = height;
+//                        }
+//                    }
+//                }];
+//                [self.player.superview updateConstraintsIfNeeded];
+//                [self.player updateConstraintsIfNeeded];
+//                [UIView animateWithDuration:0.3 delay:0.3 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+//                    [UIApplication sharedApplication].statusBarHidden = NO;
+//                    [self.player.superview layoutIfNeeded];
+//                    [self.player layoutIfNeeded];
+//                }completion:^(BOOL finish){
+//                    self.fullScreenStatus = CKAVPlayerFullScreenStatusBeNormal;
+//                }];
+//            }
+//        }
+//            break;
+//        case UIInterfaceOrientationLandscapeLeft:
+//        case UIInterfaceOrientationLandscapeRight:
+//        {
+//            if (self.player) {
+//                if (!self.originalFrame.size.width) {
+//                    self.originalFrame = self.player.frame;
+//                }
+//                [UIApplication sharedApplication].statusBarHidden = YES;
+//                CGRect frame = [UIScreen mainScreen].bounds;
+//                float width = frame.size.width;
+//                float height = frame.size.height;
+//                [self.player.superview setNeedsUpdateConstraints];
+//                [self.player setNeedsUpdateConstraints];
+//                [self.player.superview.constraints enumerateObjectsUsingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//                    @autoreleasepool {
+//                        if (obj.firstItem == self.player) {
+//                            if (obj.firstAttribute == NSLayoutAttributeLeft) {
+//                                obj.constant = 0;
+//                            }else if (obj.firstAttribute == NSLayoutAttributeTop) {
+//                                obj.constant = 0;
+//                            }
+//                        }
+//                    }
+//                }];
+//                [self.player.constraints enumerateObjectsUsingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//                    @autoreleasepool {
+//                        if (obj.firstAttribute == NSLayoutAttributeWidth) {
+//                            obj.constant = width;
+//                        }else if (obj.firstAttribute == NSLayoutAttributeHeight) {
+//                            obj.constant = height;
+//                        }
+//                    }
+//                }];
+//                [self.player.superview updateConstraintsIfNeeded];
+//                [self.player updateConstraintsIfNeeded];
+//                [UIView animateWithDuration:0.3 delay:0.3 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+//                    [UIApplication sharedApplication].statusBarHidden = YES;
+//                    [self.player.superview layoutIfNeeded];
+//                    [self.player layoutIfNeeded];
+//                }completion:^(BOOL finish){
+//                    self.fullScreenStatus = CKAVPlayerFullScreenStatusBeFullScreen;
+//                }];
+//            }
+//        }
+//            break;
+//            
+//        default:
+//            break;
+//    }
+//}
+
+- (void)enterFullSCreen {
+    if (self.fullScreenStatus != CKAVPlayerFullScreenStatusBeNormal) {
+        return;
     }
+    /*
+     * 记录进入全屏前的parentView和frame
+     */
+    self.player.normalParentView = self.player.superview;
+    self.player.normalFrame = self.player.frame;
+    
+    CGRect rectInWindow = [self.player convertRect:self.player.bounds toView:[UIApplication sharedApplication].keyWindow];
+    [self.player removeFromSuperview];
+    self.player.frame = rectInWindow;
+    [[UIApplication sharedApplication].keyWindow addSubview:self.player];
+    
+    /*
+     * 执行动画
+     */
+    [UIView animateWithDuration:0.5 animations:^{
+        self.player.transform = CGAffineTransformMakeRotation(M_PI_2);
+        self.player.bounds = CGRectMake(0, 0, CGRectGetHeight(self.player.superview.bounds), CGRectGetWidth(self.player.superview.bounds));
+        self.player.center = CGPointMake(CGRectGetMidX(self.player.superview.bounds), CGRectGetMidY(self.player.superview.bounds));
+    } completion:^(BOOL finished) {
+        self.fullScreenStatus = CKAVPlayerFullScreenStatusBeFullScreen;
+        [self.overlayView updateConstraintsIfNeeded];
+    }];
+    
+    [self refreshStatusBarOrientation:UIInterfaceOrientationLandscapeRight];
 }
 
-// deviceDidChangeStatusBarOrientation
-- (void)deviceDidChangeStatusBarOrientation: (NSNotification*)notify
-{
-//    UIViewController *currentVC = [ZXApplicationTools getCurrentVC];
-    //收到的消息是上一个InterfaceOrientation的值
-    UIInterfaceOrientation currInterfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-    switch (currInterfaceOrientation)
-    {
-        case UIInterfaceOrientationPortrait:
-        case UIInterfaceOrientationPortraitUpsideDown:
-        {
-            if (self.player) {
-                float width = self.originalFrame.size.width;
-                float height = self.originalFrame.size.height;
-                float originX = self.originalFrame.origin.x;
-                float originY = self.originalFrame.origin.y;
-                [self.player.superview setNeedsUpdateConstraints];
-                [self.player setNeedsUpdateConstraints];
-                [self.player.superview.constraints enumerateObjectsUsingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    @autoreleasepool {
-                        if (obj.firstItem == self.player) {
-                            if (obj.firstAttribute == NSLayoutAttributeLeft) {
-                                obj.constant = originX;
-                            }else if (obj.firstAttribute == NSLayoutAttributeTop) {
-                                obj.constant = originY;
-                            }
-                        }
-                        
-                    }
-                }];
-                [self.player.constraints enumerateObjectsUsingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    @autoreleasepool {
-                        if (obj.firstAttribute == NSLayoutAttributeWidth) {
-                            obj.constant = width;
-                        }else if (obj.firstAttribute == NSLayoutAttributeHeight) {
-                            obj.constant = height;
-                        }
-                    }
-                }];
-                [self.player.superview updateConstraintsIfNeeded];
-                [self.player updateConstraintsIfNeeded];
-                [UIView animateWithDuration:0.3 delay:0.3 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-                    [UIApplication sharedApplication].statusBarHidden = NO;
-                    [self.player.superview layoutIfNeeded];
-                    [self.player layoutIfNeeded];
-                }completion:^(BOOL finish){
-                    self.fullScreenStatus = CKAVPlayerFullScreenStatusBeNormal;
-                }];
-            }
-        }
-            break;
-        case UIInterfaceOrientationLandscapeLeft:
-        case UIInterfaceOrientationLandscapeRight:
-        {
-            if (self.player) {
-                if (!self.originalFrame.size.width) {
-                    self.originalFrame = self.player.frame;
-                }
-                [UIApplication sharedApplication].statusBarHidden = YES;
-                CGRect frame = [UIScreen mainScreen].bounds;
-                float width = frame.size.width;
-                float height = frame.size.height;
-                [self.player.superview setNeedsUpdateConstraints];
-                [self.player setNeedsUpdateConstraints];
-                [self.player.superview.constraints enumerateObjectsUsingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    @autoreleasepool {
-                        if (obj.firstItem == self.player) {
-                            if (obj.firstAttribute == NSLayoutAttributeLeft) {
-                                obj.constant = 0;
-                            }else if (obj.firstAttribute == NSLayoutAttributeTop) {
-                                obj.constant = 0;
-                            }
-                        }
-                    }
-                }];
-                [self.player.constraints enumerateObjectsUsingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    @autoreleasepool {
-                        if (obj.firstAttribute == NSLayoutAttributeWidth) {
-                            obj.constant = width;
-                        }else if (obj.firstAttribute == NSLayoutAttributeHeight) {
-                            obj.constant = height;
-                        }
-                    }
-                }];
-                [self.player.superview updateConstraintsIfNeeded];
-                [self.player updateConstraintsIfNeeded];
-                [UIView animateWithDuration:0.3 delay:0.3 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-                    [UIApplication sharedApplication].statusBarHidden = YES;
-                    [self.player.superview layoutIfNeeded];
-                    [self.player layoutIfNeeded];
-                }completion:^(BOOL finish){
-                    self.fullScreenStatus = CKAVPlayerFullScreenStatusBeFullScreen;
-                }];
-            }
-        }
-            break;
-            
-        default:
-            break;
+- (void)exitFullscreen {
+    
+    if (self.fullScreenStatus != CKAVPlayerFullScreenStatusBeFullScreen) {
+        return;
     }
+    
+//    self.movieView.state = MovieViewStateAnimating;
+    
+    CGRect frame = [self.player.normalParentView convertRect:self.player.normalFrame toView:[UIApplication sharedApplication].keyWindow];
+    [UIView animateWithDuration:0.5 animations:^{
+        self.player.transform = CGAffineTransformIdentity;
+        self.player.frame = frame;
+    } completion:^(BOOL finished) {
+        /*
+         * movieView回到小屏位置
+         */
+        [self.player removeFromSuperview];
+        self.player.frame = self.player.normalFrame;
+        [self.player.normalParentView addSubview:self.player];
+        self.fullScreenStatus = CKAVPlayerFullScreenStatusBeNormal;
+    }];
+    
+    [self refreshStatusBarOrientation:UIInterfaceOrientationPortrait];
 }
+
+- (void)refreshStatusBarOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    [[UIApplication sharedApplication] setStatusBarOrientation:interfaceOrientation animated:YES];
+}
+
 
 #pragma mark -
 #pragma mark -  外部接口
