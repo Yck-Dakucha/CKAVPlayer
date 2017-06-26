@@ -42,7 +42,12 @@
 
 @end
 
-@implementation CKAVPlayerController
+@implementation CKAVPlayerController {
+    NSMutableArray *playerConArray;
+    NSMutableArray *playerSuperViewConArray;
+    NSLayoutConstraint *widthCon;
+    NSLayoutConstraint *heightCon;
+}
 
 #pragma mark -  getter
 - (UIView *)view {
@@ -56,25 +61,25 @@
     return _overlayView;
 }
 
-//- (instancetype)init {
-//    self = [super init];
-//    if (self) {
-//        _player = [[CKAVPlayer alloc] init];
-//        _player.delegate = self;
-//        _fullScreenStatus = CKAVPlayerFullScreenStatusBeNormal;
-//        [_player addSubview:self.overlayView];
-//        [self configConstraints];
-//        [self configControlAction];
-//        [self addGestureRecognizer];
-//        //订阅UIApplicationDidChangeStatusBarOrientationNotification通知
-////        [[NSNotificationCenter defaultCenter] addObserver:self
-////                                                 selector:@selector(deviceDidChangeStatusBarOrientation:)
-////                                                     name:UIApplicationDidChangeStatusBarOrientationNotification
-////                                                   object:nil];
-//
-//    }
-//    return self;
-//}
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _player = [[CKAVPlayer alloc] init];
+        _player.delegate = self;
+        _fullScreenStatus = CKAVPlayerFullScreenStatusBeNormal;
+        [_player addSubview:self.overlayView];
+        [self configConstraints];
+        [self configControlAction];
+        [self addGestureRecognizer];
+        //订阅UIApplicationDidChangeStatusBarOrientationNotification通知
+//        [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                 selector:@selector(deviceDidChangeStatusBarOrientation:)
+//                                                     name:UIApplicationDidChangeStatusBarOrientationNotification
+//                                                   object:nil];
+
+    }
+    return self;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super init];
@@ -92,7 +97,7 @@
 //                                                 selector:@selector(deviceDidChangeStatusBarOrientation:)
 //                                                     name:UIApplicationDidChangeStatusBarOrientationNotification
 //                                                   object:nil];
-
+        
     }
     return self;
 }
@@ -484,27 +489,128 @@
     if (self.fullScreenStatus != CKAVPlayerFullScreenStatusBeNormal) {
         return;
     }
+//    NSLog(@" >>>>>> \n%@",self.player.constraints);
+//    NSLog(@" SUPER VIEW>>>>>> %@",self.player.superview.constraints);
+    
+    UIWindow *winodow = [UIApplication sharedApplication].keyWindow;
+    
+    playerConArray = [NSMutableArray array];
+    playerSuperViewConArray = [NSMutableArray array];
+    
+    [self.player.constraints enumerateObjectsUsingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        @autoreleasepool {
+            if (obj.firstItem == self.player && obj.secondItem == nil) {
+                [playerConArray addObject:obj];
+            }
+        }
+    }];
+    
+    [self.player.superview.constraints enumerateObjectsUsingBlock:^(__kindof NSLayoutConstraint * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        @autoreleasepool {
+            if (obj.firstItem == self.player || obj.secondItem == self.player) {
+                [playerSuperViewConArray addObject:obj];
+            }
+        }
+    }];
+    
     /*
      * 记录进入全屏前的parentView和frame
      */
     self.player.normalParentView = self.player.superview;
-    self.player.normalFrame = self.player.frame;
-    
+
     CGRect rectInWindow = [self.player convertRect:self.player.bounds toView:[UIApplication sharedApplication].keyWindow];
     [self.player removeFromSuperview];
-    self.player.frame = rectInWindow;
+    [self.player removeConstraints:playerConArray];
+    
     [[UIApplication sharedApplication].keyWindow addSubview:self.player];
     
+    NSLayoutConstraint *templeftCon = [NSLayoutConstraint constraintWithItem:self.player
+                                                               attribute:NSLayoutAttributeLeft
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:winodow
+                                                               attribute:NSLayoutAttributeLeft
+                                                              multiplier:1.0
+                                                                constant:rectInWindow.origin.x];
+    NSLayoutConstraint *temptopCon = [NSLayoutConstraint constraintWithItem:self.player
+                                                               attribute:NSLayoutAttributeTop
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:winodow
+                                                               attribute:NSLayoutAttributeTop
+                                                              multiplier:1.0
+                                                                constant:rectInWindow.origin.y];
+    
+    NSLayoutConstraint *tempwidthCon = [NSLayoutConstraint constraintWithItem:self.player
+                                                                    attribute:NSLayoutAttributeWidth
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:nil
+                                                                    attribute:NSLayoutAttributeNotAnAttribute
+                                                                   multiplier:1.0
+                                                                     constant:rectInWindow.size.width];
+    NSLayoutConstraint *tempheightCon = [NSLayoutConstraint constraintWithItem:self.player
+                                                                    attribute:NSLayoutAttributeHeight
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:nil
+                                                                    attribute:NSLayoutAttributeNotAnAttribute
+                                                                   multiplier:1.0
+                                                                     constant:rectInWindow.size.height];
+    
+    [winodow addConstraint:temptopCon];
+    [winodow addConstraint:templeftCon];
+    
+    [self.player addConstraint:tempwidthCon];
+    [self.player addConstraint:tempheightCon];
+    
+    [winodow layoutIfNeeded];
+    
+    [winodow removeConstraint:temptopCon];
+    [winodow removeConstraint:templeftCon];
+    
+    [self.player removeConstraint:tempwidthCon];
+    [self.player removeConstraint:tempheightCon];
+    
+    [winodow addConstraint:[NSLayoutConstraint constraintWithItem:self.player
+                                                        attribute:NSLayoutAttributeCenterX
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:winodow
+                                                        attribute:NSLayoutAttributeCenterX
+                                                       multiplier:1.0
+                                                         constant:0.0]];
+    [winodow addConstraint:[NSLayoutConstraint constraintWithItem:self.player
+                                                        attribute:NSLayoutAttributeCenterY
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:winodow
+                                                        attribute:NSLayoutAttributeCenterY
+                                                       multiplier:1.0
+                                                         constant:0.0]];
+    [self.player addConstraint:({
+        widthCon = [NSLayoutConstraint constraintWithItem:self.player
+                                                attribute:NSLayoutAttributeWidth
+                                                relatedBy:NSLayoutRelationEqual
+                                                   toItem:nil
+                                                attribute:NSLayoutAttributeNotAnAttribute
+                                               multiplier:1.0
+                                                 constant:CGRectGetHeight(self.player.superview.bounds)];
+        widthCon;
+    })];
+    [self.player addConstraint:({
+        heightCon = [NSLayoutConstraint constraintWithItem:self.player
+                                                 attribute:NSLayoutAttributeHeight
+                                                 relatedBy:NSLayoutRelationEqual
+                                                    toItem:nil
+                                                 attribute:NSLayoutAttributeNotAnAttribute
+                                                multiplier:1.0
+                                                  constant:CGRectGetWidth(self.player.superview.bounds)];
+        heightCon;
+    })];
     /*
      * 执行动画
      */
     [UIView animateWithDuration:0.5 animations:^{
         self.player.transform = CGAffineTransformMakeRotation(M_PI_2);
-        self.player.bounds = CGRectMake(0, 0, CGRectGetHeight(self.player.superview.bounds), CGRectGetWidth(self.player.superview.bounds));
-        self.player.center = CGPointMake(CGRectGetMidX(self.player.superview.bounds), CGRectGetMidY(self.player.superview.bounds));
+        [winodow layoutIfNeeded];
     } completion:^(BOOL finished) {
         self.fullScreenStatus = CKAVPlayerFullScreenStatusBeFullScreen;
-        [self.overlayView updateConstraintsIfNeeded];
+        [self.player setNeedsDisplay];
     }];
     
     [self refreshStatusBarOrientation:UIInterfaceOrientationLandscapeRight];
@@ -515,20 +621,20 @@
     if (self.fullScreenStatus != CKAVPlayerFullScreenStatusBeFullScreen) {
         return;
     }
-    
-//    self.movieView.state = MovieViewStateAnimating;
-    
-    CGRect frame = [self.player.normalParentView convertRect:self.player.normalFrame toView:[UIApplication sharedApplication].keyWindow];
+    [self.player removeFromSuperview];
+     [self.player.normalParentView addSubview:self.player];
+    [self.player removeConstraint:widthCon];
+    [self.player removeConstraint:heightCon];
+    [self.player addConstraints:playerConArray];
+    [self.player.normalParentView addConstraints:playerSuperViewConArray];
+
     [UIView animateWithDuration:0.5 animations:^{
         self.player.transform = CGAffineTransformIdentity;
-        self.player.frame = frame;
+        [self.player.normalParentView layoutIfNeeded];
     } completion:^(BOOL finished) {
         /*
          * movieView回到小屏位置
          */
-        [self.player removeFromSuperview];
-        self.player.frame = self.player.normalFrame;
-        [self.player.normalParentView addSubview:self.player];
         self.fullScreenStatus = CKAVPlayerFullScreenStatusBeNormal;
     }];
     

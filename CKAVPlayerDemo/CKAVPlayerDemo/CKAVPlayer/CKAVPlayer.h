@@ -106,10 +106,6 @@ typedef NS_ENUM(NSInteger,CKAVPlayerTimeControlStatus) {
  小屏大小的ParentView
  */
 @property (nonatomic, weak,           ) UIView *normalParentView;
-/**
- 小屏大小的Frame
- */
-@property (nonatomic, assign          ) CGRect normalFrame;
 
 /**
  设置播放信息

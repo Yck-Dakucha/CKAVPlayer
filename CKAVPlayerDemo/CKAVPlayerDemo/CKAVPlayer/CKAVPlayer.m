@@ -58,6 +58,8 @@
 }
 
 - (void)creatPlayer {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+    self.backgroundColor = [UIColor lightGrayColor];
     _player = [[AVPlayer alloc] init];
     ((AVPlayerLayer *)self.layer).player = _player;
 }
@@ -145,9 +147,7 @@
 #pragma mark -  
 #pragma mark -  KVO
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    
-    
-    
+ 
     if ([keyPath isEqualToString:@"status"]) {
         AVPlayerItem *item = (AVPlayerItem *)object;
         //状态监听

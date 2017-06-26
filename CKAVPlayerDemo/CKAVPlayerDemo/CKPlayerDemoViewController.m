@@ -21,41 +21,75 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 
-//    self.videoPlayerController = [[CKAVPlayerController alloc] init];
-    self.videoPlayerController = [[CKAVPlayerController alloc] initWithFrame:CGRectMake(0, 64, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 9/16.0)];
+    self.videoPlayerController = [[CKAVPlayerController alloc] init];
+//    self.videoPlayerController = [[CKAVPlayerController alloc] initWithFrame:CGRectMake(0, 64, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 9/16.0)];
     [self.view addSubview:self.videoPlayerController.view];
-//    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoPlayerController.view
-//                                                     attribute:NSLayoutAttributeLeft
-//                                                     relatedBy:NSLayoutRelationEqual
-//                                                        toItem:self.view
-//                                                     attribute:NSLayoutAttributeLeft
-//                                                    multiplier:1.0
-//                                                      constant:0]];
-//    
-//    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoPlayerController.view
-//                                                     attribute:NSLayoutAttributeTop
-//                                                     relatedBy:NSLayoutRelationEqual
-//                                                        toItem:self.view
-//                                                     attribute:NSLayoutAttributeTop
-//                                                    multiplier:1.0
-//                                                      constant:64]];
-//    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoPlayerController.view
-//                                                     attribute:NSLayoutAttributeRight
-//                                                     relatedBy:NSLayoutRelationEqual
-//                                                        toItem:self.view
-//                                                     attribute:NSLayoutAttributeRight
-//                                                    multiplier:1.0
-//                                                      constant:0]];
-//    [self.videoPlayerController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoPlayerController.view
-//                                                     attribute:NSLayoutAttributeHeight
-//                                                     relatedBy:NSLayoutRelationEqual
-//                                                        toItem:nil
-//                                                     attribute:NSLayoutAttributeNotAnAttribute
-//                                                    multiplier:1.0
-//                                                      constant:[UIScreen mainScreen].bounds.size.width * 9/16.0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoPlayerController.view
+                                                     attribute:NSLayoutAttributeLeft
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:self.view
+                                                     attribute:NSLayoutAttributeLeft
+                                                    multiplier:1.0
+                                                      constant:0]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoPlayerController.view
+                                                     attribute:NSLayoutAttributeTop
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:self.view
+                                                     attribute:NSLayoutAttributeTop
+                                                    multiplier:1.0
+                                                      constant:64]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoPlayerController.view
+                                                     attribute:NSLayoutAttributeRight
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:self.view
+                                                     attribute:NSLayoutAttributeRight
+                                                    multiplier:1.0
+                                                      constant:0]];
+    [self.videoPlayerController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoPlayerController.view
+                                                     attribute:NSLayoutAttributeHeight
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:nil
+                                                     attribute:NSLayoutAttributeNotAnAttribute
+                                                    multiplier:1.0
+                                                      constant:[UIScreen mainScreen].bounds.size.width * 9/16.0]];
     [self.videoPlayerController ck_playWithURL:[NSURL URLWithString:@"http://znf.oss-cn-shanghai.aliyuncs.com/course/znf2017031401/znf2017031401001.mp4"]];
     self.videoPlayerController.delegate = self;
     self.videoPlayerController.title = @"fuckTitle";
+    
+    UILabel *label = [[UILabel alloc] init];
+    label.text = @"dasdasdasdasdasdasdasdasdsdasdasdasdasdasdasdasdasdsdasdasdasdasdasdasdasdasdsdasdasdasdasdasdasdasdasdsdasdasdasdasdasdasdasdasdsdasdasdasdasdasdasdasdasdsdasdasdasdasdasdasdasdasdsdasdasdasdasdasdasdasdasdsdasdasdasdasdasdasdasdasdsdasdasdasdasdasdasdasdasdsdasdasdasdasdasdasdasdasdsd";
+    label.translatesAutoresizingMaskIntoConstraints = NO;
+    label.textColor = [UIColor blackColor];
+    label.numberOfLines = 0;
+    label.backgroundColor = [UIColor lightGrayColor];
+    [self.view addSubview:label];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:label
+                                                          attribute:NSLayoutAttributeLeft
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeLeft
+                                                         multiplier:1.0
+                                                           constant:20]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:label
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.videoPlayerController.view
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1.0
+                                                           constant:20]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:label
+                                                          attribute:NSLayoutAttributeRight
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeRight
+                                                         multiplier:1.0
+                                                           constant:-20]];
+    
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
