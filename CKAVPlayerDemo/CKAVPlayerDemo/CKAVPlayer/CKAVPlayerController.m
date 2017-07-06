@@ -7,6 +7,12 @@
 //
 
 #import "CKAVPlayerController.h"
+#import <MediaPlayer/MPMusicPlayerController.h>
+#import <MediaPlayer/MediaPlayer.h>
+
+#define kCKScreenWidth  [UIScreen mainScreen].bounds.size.width
+#define kCKScreenHeight [UIScreen mainScreen].bounds.size.height
+#define kCKSystemVersion ([[[UIDevice currentDevice] systemVersion] floatValue])
 
 @interface CKAVPlayerController ()<CKAVPlayerDelegate,UIGestureRecognizerDelegate>
 
@@ -33,6 +39,14 @@
  拖动，慢速移动
  */
 @property (nonatomic, strong) UIPanGestureRecognizer   *panRecognizer;
+/**
+ 上一次调节音量时的音量大小
+ */
+@property (nonatomic, assign) float lastVolume;
+/**
+ 获取MediaPlayer的Slider
+ */
+@property (nonatomic, strong) UISlider* volumeViewSlider;
 /**
  全屏状态
  */
@@ -146,9 +160,32 @@
 
 #pragma mark - addGestureRecognizer
 - (void)addGestureRecognizer {
+    //tapRecognizer手势
     _tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
     _tapRecognizer.delegate = self;
     [self.player addGestureRecognizer:_tapRecognizer];
+    
+    // panRecognizer手势
+    _panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+    [self.player addGestureRecognizer:_panRecognizer];
+    self.panRecognizer.delegate = self;
+    
+    // leftSwipeRecognizer手势
+    self.leftSwipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+    [self.leftSwipeRecognizer setDirection:UISwipeGestureRecognizerDirectionLeft ];
+    if (self.panRecognizer) {
+        [self.panRecognizer requireGestureRecognizerToFail:self.leftSwipeRecognizer];
+    }
+    
+    [self.player addGestureRecognizer:self.leftSwipeRecognizer];
+    
+    // leftSwipeRecognizer手势
+    self.rightSwipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+    [self.rightSwipeRecognizer setDirection:UISwipeGestureRecognizerDirectionRight];
+    if (self.panRecognizer) {
+        [self.panRecognizer requireGestureRecognizerToFail:self.rightSwipeRecognizer];
+    }
+    [self.player addGestureRecognizer:self.rightSwipeRecognizer];
 
 }
 
@@ -165,6 +202,18 @@
     {
         return NO;
     }
+    //滑动控制音量的时候剔除上下bar的范围
+    if(self.overlayView.isBarVisiable && gestureRecognizer == self.panRecognizer)
+    {
+        CGPoint panPointInBottomBar = [touch locationInView:self.overlayView.bottomBar];
+        CGPoint panPointInTopBar = [touch locationInView:self.overlayView.topBar];
+        if ([self.overlayView.bottomBar pointInside:panPointInBottomBar withEvent:nil]
+            || [self.overlayView.topBar pointInside:panPointInTopBar withEvent:nil])
+        {
+            //如果上下bar显示时，touch是从上下bar的范围开始的，则不识别为pan调音量
+            return NO;
+        }
+    }
     return YES;
 }
 
@@ -178,6 +227,103 @@
         [self.overlayView ck_animateShowBars];
     }
 }
+
+// 处理音量和亮度
+- (void)handlePan:(UIPanGestureRecognizer*)recognizer
+{
+    CGPoint location = [recognizer locationInView:self.player];
+    CGPoint point = [recognizer translationInView:recognizer.view];
+    
+    if (location.x > kCKScreenWidth * 0.5) {
+        
+        if (recognizer.state == UIGestureRecognizerStateBegan) {
+            self.lastVolume = [self ck_GetCurrentVolume];
+        }
+        
+        float volumeDelta = point.y / (recognizer.view.bounds.size.height) * 0.5;
+        float newVolume = self.lastVolume - volumeDelta;
+        
+        [self ck_SetVolume:newVolume];
+        
+    } else {
+        
+        float brightness = [UIScreen mainScreen].brightness;  //0 .. 1.0
+        float delta = -point.y / recognizer.view.bounds.size.height * 0.1;
+        
+        brightness = ((brightness + delta) >= 1) ? 1 : (brightness + delta) ;
+        brightness = (brightness <= 0) ? 0 : brightness ;
+        
+        [[UIScreen mainScreen] setBrightness:brightness];
+    }
+}
+// 处理快进和快退
+- (void)handleSwipe:(UISwipeGestureRecognizer *)recognizer
+{
+    switch (recognizer.direction)
+    {
+        case UISwipeGestureRecognizerDirectionRight:
+        {
+            //快进
+            float currentPlaybackTime = [self.player playBackTime];
+            [self.player ck_seekToTime:(currentPlaybackTime + 10.f)];
+        }
+            break;
+        case UISwipeGestureRecognizerDirectionLeft:
+        {
+            //快退
+            float currentPlaybackTime = [self.player playBackTime];
+            [self.player ck_seekToTime:(currentPlaybackTime - 10.f)];
+        }
+        default:
+            break;
+            
+    }
+}
+
+// 兼容iOS 7.0前后的音量控制
+- (float)ck_GetCurrentVolume {
+    
+    //方法一 通过控制播放器音量 控制音量
+    //    return  self.player.volume;
+    //方法二 通过控制系统声音 控制音量
+    
+    if (kCKSystemVersion >= 7) {
+        if (_volumeViewSlider) {
+            return _volumeViewSlider.value;
+        }
+        MPVolumeView *volumeView = [[MPVolumeView alloc] init];
+        for (UIView *view in [volumeView subviews]){
+            if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
+                _volumeViewSlider = (UISlider*)view;
+                break;
+            }
+        }
+        return _volumeViewSlider.value;
+    } else {
+        
+        return [[MPMusicPlayerController applicationMusicPlayer] volume];
+    }
+    
+    return [[MPMusicPlayerController applicationMusicPlayer] volume];
+    
+}
+
+- (void)ck_SetVolume:(float)newVolume {
+    //方法一 通过控制播放器音量 控制音量
+    //     [self.player setVolume:newVolume];
+    
+    //方法二 通过控制系统声音 控制音量
+    newVolume = newVolume > 1 ? 1 : newVolume;
+    newVolume = newVolume < 0 ? 0 : newVolume;
+    
+    if (kCKSystemVersion >= 7) {
+        [self.volumeViewSlider setValue:newVolume animated:NO];
+    } else {
+        [[MPMusicPlayerController applicationMusicPlayer] setVolume:newVolume];
+    }
+}
+
+
 
 #pragma mark -  播放器代理
 - (BOOL)ck_AVPlayerVideoShouldPlay:(CKAVPlayer *)avPlayer {
