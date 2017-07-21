@@ -183,10 +183,6 @@
                 self.status = CKAVPlayerStatusBufferFinished;
             }
         }
-        //播放结束
-        if (self.playBackTime == self.totalDuration && self.totalDuration != 0) {
-            self.status = CKAVPlayerStatusPlayedToTheEnd;
-        }
     }else if ([keyPath isEqualToString:@"timeControlStatus"]) {
         AVPlayer *player = (AVPlayer *)object;
         if (self.delegate && [self.delegate respondsToSelector:@selector(ck_AVPlayer:timeControlStatusDidChange:)]) {
@@ -218,6 +214,10 @@
             NSTimeInterval timeInterval = CMTimeGetSeconds(time);
             weakSelf.playBackTime = timeInterval;
             [weakSelf.delegate ck_AVPlayer:weakSelf timeDidChange:timeInterval];
+            //播放完毕
+            if (weakSelf.playBackTime == weakSelf.totalDuration && weakSelf.totalDuration != 0) {
+                weakSelf.status = CKAVPlayerStatusPlayedToTheEnd;
+            }
         }
     }];
 }
