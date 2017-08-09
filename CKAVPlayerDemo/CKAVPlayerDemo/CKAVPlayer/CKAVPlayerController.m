@@ -366,6 +366,7 @@
             break;
         }
         case CKAVPlayerStatusError: {
+            [self.overlayView ck_hideLoadingIndicator:nil];
             NSLog(@"ERROR");
             break;
         }

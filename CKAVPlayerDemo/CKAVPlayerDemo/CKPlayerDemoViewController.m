@@ -53,7 +53,11 @@
                                                      attribute:NSLayoutAttributeNotAnAttribute
                                                     multiplier:1.0
                                                       constant:[UIScreen mainScreen].bounds.size.width * 9/16.0]];
-    [self.videoPlayerController ck_playWithURL:[NSURL URLWithString:@"http://znf.oss-cn-shanghai.aliyuncs.com/course/znf2017031401/znf2017031401001.mp4"]];
+//    [self.videoPlayerController ck_playWithURL:[NSURL URLWithString:@"http://znf.oss-cn-shanghai.aliyuncs.com/course/znf2017031401/znf2017031401001.mp4"]];
+    
+    
+    [self.videoPlayerController ck_playWithURL:[NSURL URLWithString:@"http://live.3gv.ifeng.com/live/hongkong.m3u8"]];
+    
     self.videoPlayerController.delegate = self;
     self.videoPlayerController.title = @"fuckTitle";
     
